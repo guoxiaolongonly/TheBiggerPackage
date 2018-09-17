@@ -1,0 +1,61 @@
+ext {
+    isAlone = false;//false:作为Lib组件存在， true:作为application存在
+
+
+    libsVersion = [
+            // App dependencies version
+            supportLibraryVersion = '27.0.1',
+            support_v4 = '27.0.1',
+            constraintVersion = "1.0.2",
+            multidex = "1.0.1",
+    ]
+
+    android = [
+            minSdkVersion             : 16,
+            targetSdkVersion          : 27,
+            compileSdkVersion         : 27,
+            buildToolsVersion         : '27.0.1',
+            sourceCompatibilityVersion: JavaVersion.VERSION_1_8,
+            targetCompatibilityVersion: JavaVersion.VERSION_1_8,
+            versionCode               : 1,
+            versionName               : '1.0.0',
+    ]
+
+    dependencies = [
+            appcompatV7               : "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion",
+            design                    : "com.android.support:design:$rootProject.supportLibraryVersion",
+            recycleview               : "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion",
+            support_v4                : "com.android.support:support-v4:$rootProject.support_v4",
+
+            "mutidex"                 : "com.android.support:multidex:1.0.1",
+            "okhttp3"                 : "com.squareup.okhttp3:okhttp:3.3.1",
+            "rxjava2"                 : "io.reactivex.rxjava2:rxjava:2.1.1",
+            "rxjava2_android"         : "io.reactivex.rxjava2:rxandroid:2.0.1",
+            "rxlifecycle2"            : "com.trello.rxlifecycle2:rxlifecycle:2.1.0",
+            "rxlifecycle2_components" : "com.trello.rxlifecycle2:rxlifecycle-components:2.1.0",
+            "rxpermission"            : "com.tbruyelle.rxpermissions2:rxpermissions:0.9.4",
+
+            // Retrofit
+            "retrofit"                : "com.squareup.retrofit2:retrofit:2.3.0",
+            "retrofit_adapter_rxjava2": "com.squareup.retrofit2:adapter-rxjava2:2.3.0",
+            "fastjson"                : "com.alibaba:fastjson:1.1.68.android",
+            "fastjson_converter"      : "org.ligboy.retrofit2:converter-fastjson-android:2.1.0",
+            "simplexml"               : "com.squareup.retrofit2:converter-simplexml:2.3.0",
+
+            // GreenDao
+            "greenDao"                : "org.greenrobot:greendao:3.2.2",
+            "greenDao_generator"      : "org.greenrobot:greendao-generator:3.2.2",
+            "greendao_plugin"         : "org.greenrobot:greendao-gradle-plugin:3.2.2",
+
+            "db_sqlciphers"           : "net.zetetic:android-database-sqlcipher:3.5.4@aar",
+            //Glide
+            "glide"                   : "com.github.bumptech.glide:glide:4.6.1",
+            //Event
+            "event"                   : "org.greenrobot:eventbus:3.0.0",
+            // Other
+            "logger"                  : "com.orhanobut:logger:1.15",
+            //autolayout
+            "auto_layout"             : "com.zhy:autolayout:1.4.5"
+
+    ]
+}

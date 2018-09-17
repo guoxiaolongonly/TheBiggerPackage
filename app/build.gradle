@@ -1,0 +1,158 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    lintOptions {
+        abortOnError false
+    }
+    defaultConfig {
+        applicationId "cn.xiaolong.thebiggest"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        flavorDimensions "1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "HOST_URL", HOST_URL)
+        buildConfigField("String", "KEY_DEVICE_MAC", KEY_DEVICE_MAC)
+        buildConfigField("Integer", "CONNECT_TIMEOUT", CONNECT_TIMEOUT)
+        buildConfigField("Integer", "WRITE_TIMEOUT", WRITE_TIMEOUT)
+        buildConfigField("Integer", "READ_TIMEOUT", READ_TIMEOUT)
+    }
+    signingConfigs {
+        debug {
+            storeFile file(KEYSTORE)
+            storePassword STORE_PASSWORD
+            keyAlias KEYALIAS
+            keyPassword KEY_PASSWORD
+        }
+        release {
+            storeFile file(KEYSTORE)
+            storePassword STORE_PASSWORD
+            keyAlias KEYALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
+
+    compileOptions {
+        targetCompatibility rootProject.ext.android.targetCompatibilityVersion
+        sourceCompatibility rootProject.ext.android.sourceCompatibilityVersion
+    }
+    buildTypes {
+        debug {
+            buildConfigField("String", "HOST_URL", HOST_URL)
+            versionNameSuffix "-debug"
+            //是否使用代码混淆
+            minifyEnabled false
+            zipAlignEnabled false
+            //移除无用的resource文件
+            shrinkResources false
+            signingConfig signingConfigs.debug
+        }
+        release {
+            buildConfigField("String", "HOST_URL", HOST_URL)
+            debuggable false
+            //是否使用代码混淆
+            minifyEnabled false
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+        }
+        //修改生成的apk名字，格式为 app名_版本号_打包时间_渠道名_release.apk
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+//                def oldFile = output.outputFile
+                if (variant.buildType.name.equals('release')) {
+                    outputFileName = getProductName() + "_v${defaultConfig.versionName}_${releaseTime()}_" + variant.productFlavors[0].name + '_release.apk'
+//                    output.outputFile = new File(oldFile.parent, releaseApkName)
+                } else if (variant.buildType.name.equals('debug')) {
+                    outputFileName = getProductName() + "_v${defaultConfig.versionName}_${releaseTime()}_" + variant.productFlavors[0].name + '_debug.apk'
+//                    output.outputFile = new File(oldFile.parent, debugApkName)
+                }
+            }
+        }
+    }
+
+    //自动多渠道打包
+    productFlavors {
+        xm {
+        }
+        anhui {
+        }
+
+        haier {
+        }
+    }
+}
+
+// 读取版本号
+def getVersionCode() {
+    def versionFile = file('version.properties')
+    if (versionFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionFile))
+        def versionCode = versionProps['VERSION_CODE'].toInteger()
+        def runTasks = gradle.startParameter.taskNames
+        if ('assembleRelease' in runTasks) {
+            versionProps['VERSION_CODE'] = (++versionCode).toString()
+            versionProps.store(versionFile.newWriter(), null)
+        }
+        return versionCode
+    } else {
+        throw new GradleException("Could not find version.properties!")
+    }
+}
+// 读取版本名
+def getVersionName() {
+    def versionFile = file('version.properties')
+    if (versionFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionFile))
+        def versionName = versionProps['VERSION_NAME']
+        return versionName
+    } else {
+        throw new GradleException("Could not find version.properties!")
+    }
+}
+// 获取程序名称
+def getProductName() {
+    return "数据通8300"
+}
+// 获取当前系统时间
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation rootProject.ext.dependencies.mutidex
+
+    implementation rootProject.ext.dependencies.okhttp3
+    // RX
+    implementation rootProject.ext.dependencies.rxjava2
+    implementation rootProject.ext.dependencies.rxjava2_android
+    implementation rootProject.ext.dependencies.rxlifecycle2
+    implementation rootProject.ext.dependencies.rxlifecycle2_components
+    implementation rootProject.ext.dependencies.rxpermission
+    // Retrofit
+    implementation rootProject.ext.dependencies.retrofit
+    implementation rootProject.ext.dependencies.retrofit_adapter_rxjava2
+    implementation rootProject.ext.dependencies.fastjson
+    implementation rootProject.ext.dependencies.fastjson_converter
+    // Other
+    implementation rootProject.ext.dependencies.logger
+    // PinYin
+    compile 'com.belerweb:pinyin4j:2.5.1'
+    compile(rootProject.ext.dependencies.simplexml) {
+        exclude module: 'stax'
+        exclude module: 'stax-api'
+        exclude module: 'xpp3'
+    }
+}
