@@ -18,7 +18,6 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
 /**
  * Retrofit的封装类
  *
- * @author lC
  * @version 1.0
  */
 public class RetrofitHolder {
@@ -44,7 +43,7 @@ public class RetrofitHolder {
     }
 
 
-    private RetrofitHolder(IBuildPublicParams iBuildPublicParams, CookieJar cookieJar) {
+    private RetrofitHolder(IBuildPublicParams buildPublicParams,CookieJar cookieJar) {
         if (mRetrofit == null) {
             if (NetworkConfig.getBaseUrl() == null || NetworkConfig.getBaseUrl().trim().equals("")) {
                 throw new RuntimeException("网络模块必须设置在Application处调用 请求的地址 调用方法：NetworkConfig.setBaseUrl(String url)");
@@ -54,6 +53,7 @@ public class RetrofitHolder {
                     .writeTimeout(BuildConfig.WRITE_TIMEOUT, TimeUnit.SECONDS)
                     .readTimeout(BuildConfig.READ_TIMEOUT, TimeUnit.SECONDS)
                     .cookieJar(cookieJar)
+                    .addInterceptor(new RequestHeaderInterceptor())
                     .addInterceptor(new HttpLogInterceptor().setLevel(HttpLogInterceptor.Level.BODY))
                     .build();
             mRetrofit = new Retrofit.Builder()

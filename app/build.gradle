@@ -20,20 +20,20 @@ android {
         buildConfigField("Integer", "WRITE_TIMEOUT", WRITE_TIMEOUT)
         buildConfigField("Integer", "READ_TIMEOUT", READ_TIMEOUT)
     }
-    signingConfigs {
-        debug {
-            storeFile file(KEYSTORE)
-            storePassword STORE_PASSWORD
-            keyAlias KEYALIAS
-            keyPassword KEY_PASSWORD
-        }
-        release {
-            storeFile file(KEYSTORE)
-            storePassword STORE_PASSWORD
-            keyAlias KEYALIAS
-            keyPassword KEY_PASSWORD
-        }
-    }
+//    signingConfigs {
+//        debug {
+//            storeFile file(KEYSTORE)
+//            storePassword STORE_PASSWORD
+//            keyAlias KEYALIAS
+//            keyPassword KEY_PASSWORD
+//        }
+//        release {
+//            storeFile file(KEYSTORE)
+//            storePassword STORE_PASSWORD
+//            keyAlias KEYALIAS
+//            keyPassword KEY_PASSWORD
+//        }
+//    }
 
     compileOptions {
         targetCompatibility rootProject.ext.android.targetCompatibilityVersion
@@ -48,7 +48,7 @@ android {
             zipAlignEnabled false
             //移除无用的resource文件
             shrinkResources false
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.debug
         }
         release {
             buildConfigField("String", "HOST_URL", HOST_URL)
@@ -59,7 +59,7 @@ android {
             // 移除无用的resource文件
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
 
         }
         //修改生成的apk名字，格式为 app名_版本号_打包时间_渠道名_release.apk
