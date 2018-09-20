@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "HOST_URL", HOST_URL)
         buildConfigField("String", "KEY_DEVICE_MAC", KEY_DEVICE_MAC)
+        buildConfigField("String", "KEY_SN", KEY_SN)
         buildConfigField("Integer", "CONNECT_TIMEOUT", CONNECT_TIMEOUT)
         buildConfigField("Integer", "WRITE_TIMEOUT", WRITE_TIMEOUT)
         buildConfigField("Integer", "READ_TIMEOUT", READ_TIMEOUT)

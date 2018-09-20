@@ -40,7 +40,7 @@ public class HttpInterceptor implements Interceptor {
             requestBuilder.method(original.method(), RequestBody.create(JSON, com.alibaba.fastjson.JSON.toJSONString(params)));
         }
         requestBuilder = iBuildPublicParams == null ? requestBuilder : iBuildPublicParams.buildPublicParams(requestBuilder);
-//        printRequestLog(requestBuilder.build());
+        printRequestLog(requestBuilder.build());
         Response response = chain.proceed(requestBuilder.build());
         printResponseLog(response);
         return response;

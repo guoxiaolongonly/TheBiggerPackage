@@ -53,7 +53,7 @@ public class RetrofitHolder {
                     .writeTimeout(BuildConfig.WRITE_TIMEOUT, TimeUnit.SECONDS)
                     .readTimeout(BuildConfig.READ_TIMEOUT, TimeUnit.SECONDS)
                     .cookieJar(cookieJar)
-                    .addInterceptor(new RequestHeaderInterceptor())
+                    .addInterceptor(new HttpInterceptor(buildPublicParams))
                     .addInterceptor(new HttpLogInterceptor().setLevel(HttpLogInterceptor.Level.BODY))
                     .build();
             mRetrofit = new Retrofit.Builder()
