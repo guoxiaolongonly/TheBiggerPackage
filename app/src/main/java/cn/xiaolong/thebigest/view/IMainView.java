@@ -10,4 +10,6 @@ package cn.xiaolong.thebigest.view;
 public interface IMainView  extends ILoadingView{
 
     void onGetLuckyNumberSuccess(String luckyNumber);
+
+    void getSnAndLuckyNumSuccess(String sn,String luckNumber);
 }

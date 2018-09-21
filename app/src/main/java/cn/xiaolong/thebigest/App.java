@@ -3,6 +3,7 @@ package cn.xiaolong.thebigest;
 import android.app.Application;
 import android.content.Context;
 
+import cn.xiaolong.thebigest.net.NetworkConfig;
 import cn.xiaolong.thebigest.util.SPHelp;
 
 /**
@@ -20,6 +21,7 @@ public class App extends Application {
         super.onCreate();
         SPHelp.init(this);
         baseContext = this;
+        NetworkConfig.setBaseUrl(BuildConfig.HOST_URL);
     }
 
     public static Context getContext() {

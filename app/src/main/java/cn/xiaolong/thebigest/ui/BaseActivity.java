@@ -1,9 +1,12 @@
-package cn.xiaolong.thebigest;
+package cn.xiaolong.thebigest.ui;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import cn.xiaolong.thebigest.dialog.LoadingDialog;
+import cn.xiaolong.thebigest.presenter.BasePresenter;
 import cn.xiaolong.thebigest.view.ILoadingView;
 
 /**
@@ -13,8 +16,15 @@ import cn.xiaolong.thebigest.view.ILoadingView;
  * @version v1.0
  * @since 2018/9/20 16:58
  */
-public abstract class BaseActivity extends AppCompatActivity implements ILoadingView{
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements ILoadingView{
     private LoadingDialog loadingDialog;
+    protected T presenter;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.presenter=initPresenter();
+    }
 
     public void showToast(String text)
     {
@@ -56,8 +66,18 @@ public abstract class BaseActivity extends AppCompatActivity implements ILoading
 
     }
 
+    protected T initPresenter(){
+        return null;
+    }
+
     @Override
     public void hideLoading() {
         closeLoadingDialog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
     }
 }
