@@ -1,7 +1,5 @@
 package cn.xiaolong.thebigest.entity;
 
-import okhttp3.Cookie;
-
 /**
  * <实现思路大体如下，为每个帐号注册一个QQ号，然后把帐号录入进来，每个帐号绑定相应的签名Cookie，
  * 为每个QQ设置密码当小号使用，使用PC端工具登录QQ把QQ的Cookie手动录入，缓存Cookie到本地
@@ -13,6 +11,18 @@ import okhttp3.Cookie;
  */
 public class AccountInfo {
 
-    public Cookie qqSignCookie;//    phoneNumber,openid,sid 这个是QQ登录后提供给饿了么需要的cookie
-    public Cookie platformCookie; //这个是饿了么手机号登录后的cookie
+
+    public String sign;  //eleme_key
+    public String openId; //openId
+    public String QQ; //作为QQ号码判断
+    public String sid; //手机号码登录后会有一个sid
+    public boolean isValid = true; //作为有效性判断
+    public String time;//领取的日期
+    public int perDaycount;//当日领取的次数
+    public int allTimeCount;//总次数
+    public AccountInfo(String sign, String openId, String QQ) {
+        this.sign = sign;
+        this.openId = openId;
+        this.QQ = QQ;
+    }
 }

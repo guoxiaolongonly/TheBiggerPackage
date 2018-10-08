@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -21,7 +23,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private TextView tvUrlParseResult;
     private TextView tvSubmit;
     private String mCurrentSn;
-    private TextView tvBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +35,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     protected MainPresenter initPresenter() {
         return new MainPresenter(this);
     }
 
     private void initView() {
-        tvPhoneNumber = (EditText) findViewById(R.id.tvPhoneNumber);
-        etUrl = (EditText) findViewById(R.id.etUrl);
-        tvUrlParseResult = (TextView) findViewById(R.id.tvUrlParseResult);
-        tvSubmit = (TextView) findViewById(R.id.tvSubmit);
-        tvBind= (TextView) findViewById(R.id.tvBind);
+        tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
+        etUrl = findViewById(R.id.etUrl);
+        tvUrlParseResult = findViewById(R.id.tvUrlParseResult);
+        tvSubmit = findViewById(R.id.tvSubmit);
     }
 
     private void initData() {
@@ -70,11 +76,18 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 presenter.getCheckAndParseLuckyPackage(s.toString());
             }
         });
-        tvBind.setOnClickListener(v -> {
-            startActivity(new Intent());
-        });
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id =item.getItemId();
+        if (id == R.id.action_setting) {
+            startActivity(new Intent(this,BindActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onGetLuckyNumberSuccess(String luckyNumber) {

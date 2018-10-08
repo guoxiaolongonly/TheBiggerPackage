@@ -8,6 +8,7 @@
         android:id="@+id/tvPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:inputType="phone"
         android:background="@color/white"
         android:layout_marginTop="20dp"
         android:paddingLeft="10dp"
@@ -54,16 +55,5 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/white"
         android:text="领取" />
-    <TextView
-        android:id="@+id/tvBind"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:text="添加小号"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"
-        />
     </LinearLayout>
 </LinearLayout>

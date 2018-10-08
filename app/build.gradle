@@ -20,6 +20,7 @@ android {
         buildConfigField("Integer", "CONNECT_TIMEOUT", CONNECT_TIMEOUT)
         buildConfigField("Integer", "WRITE_TIMEOUT", WRITE_TIMEOUT)
         buildConfigField("Integer", "READ_TIMEOUT", READ_TIMEOUT)
+        buildConfigField("String", "KEY_ACCOUNT_CACHE", KEY_ACCOUNT_CACHE)
     }
 //    signingConfigs {
 //        debug {
@@ -131,10 +132,11 @@ def releaseTime() {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation rootProject.ext.dependencies.appcompatV7
+    implementation rootProject.ext.dependencies.recycleview
+    implementation rootProject.ext.dependencies.support_v4
     implementation rootProject.ext.dependencies.mutidex
-
     implementation rootProject.ext.dependencies.okhttp3
     // RX
     implementation rootProject.ext.dependencies.rxjava2
