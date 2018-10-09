@@ -16,5 +16,7 @@ public interface IBindView extends ILoadingView {
     void cacheSuccess();
     void onGetListSuccess(List<AccountInfo> accountInfos);
 
-    void onGetQrCodeSuccess(String result);
+    void onGetSmsCodeSuccess(String result);
+
+    void onLoginSuccess(AccountInfo accountInfo, String result);
 }

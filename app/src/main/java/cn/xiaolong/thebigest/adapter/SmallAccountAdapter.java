@@ -2,6 +2,7 @@ package cn.xiaolong.thebigest.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,16 +100,25 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         private TextView tvQQ;
         private TextView tvDelete;
         private TextView tvGetSid;
-
+        private TextView tvSid;
         public ViewHolder(View itemView) {
             super(itemView);
             tvQQ = itemView.findViewById(R.id.tvQQ);
             tvDelete = itemView.findViewById(R.id.tvDelete);
             tvGetSid = itemView.findViewById(R.id.tvGetSid);
+            tvSid = itemView.findViewById(R.id.tvSid);
         }
 
         public void setData(AccountInfo data) {
-            tvQQ.setText(data.QQ);
+            tvQQ.setText("QQ:"+data.QQ);
+//            String sid ="".equals(data.sid)?"请获取    ":data.sid;
+            tvSid.setText("sid:"+data.sid);
+            if(TextUtils.isEmpty(data.sid))
+            {
+                tvGetSid.setText("请获取");
+            }else{
+                tvGetSid.setText("重新获取");
+            }
             tvDelete.setOnClickListener(v -> {
                 if (mOnDeleteClickListener != null) {
                     v.setTag(data);

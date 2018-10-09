@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ import cn.xiaolong.thebigest.dialog.AccountAddDialog;
 import cn.xiaolong.thebigest.dialog.SmsDialog;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.presenter.BindPresenter;
-import cn.xiaolong.thebigest.util.LogUtil;
 import cn.xiaolong.thebigest.view.IBindView;
 
 /**
@@ -65,7 +63,8 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
         smallAccountAdapter.setOnGetSidClick(v -> {
 //            AccountInfo accountInfo = (AccountInfo) v.getTag();
 //            presenter.getQrCode(accountInfo);
-
+            smsDialog.setAccountInfo((AccountInfo) v.getTag());
+            smsDialog.show();
         });
 
         smallAccountAdapter.setOnItemClickListener(v -> {
@@ -99,16 +98,11 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
                     presenter.cache(smallAccountAdapter.getItems());
                 }).build();
 
-        smsDialog =new SmsDialog.Builder(this).setAccountInfo(null).setTitle("手机验证!").setListener(new SmsDialog.OnSubmitListener() {
-            @Override
-            public void submit(AccountInfo accountInfo, String mobile, String verCode) {
-
-            }
-        }).setOnGetVerCodeClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+        smsDialog =new SmsDialog.Builder(this).setAccountInfo(null).setTitle("手机验证").setListener((accountInfo, mobile, verCode) -> {
+            presenter.login(accountInfo,mobile,verCode);
+        }).setOnGetVerCodeClickListener(v -> {
+            String phone = (String) v.getTag();
+            presenter.getMobileCode(phone,"","");
         }).build();
     }
 
@@ -135,7 +129,13 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     }
 
     @Override
-    public void onGetQrCodeSuccess(String result) {
-        LogUtil.d(result);
+    public void onGetSmsCodeSuccess(String result) {
+        smsDialog.startCountDown();
+        showToast("验证码发送成功！");
+    }
+
+    @Override
+    public void onLoginSuccess(AccountInfo accountInfo, String result) {
+        showToast("sid，获取成功！");
     }
 }

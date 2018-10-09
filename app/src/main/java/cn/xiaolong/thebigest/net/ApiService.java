@@ -1,9 +1,12 @@
 package cn.xiaolong.thebigest.net;
 
 
+import cn.xiaolong.thebigest.entity.ResponseHeader;
+import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -28,8 +31,9 @@ public interface ApiService {
      * @param captchaValue 图形验证码内容
      * @return 返回参数是验证码Token validateToken
      */
+    @FormUrlEncoded
     @POST("/restapi/eus/login/mobile_send_code")
-    Observable<ResponseBody> getMobileCode(@Field("mobile") String mobile, @Field("captcha_hash") String captchaHash
+    Observable<TokenBean> getMobileCode(@Field("mobile") String mobile, @Field("captcha_hash") String captchaHash
             , @Field("captcha_value") String captchaValue);
 
 
@@ -41,9 +45,10 @@ public interface ApiService {
      * @param validateCode 手机接收到的验证码信息
      * @return 返回参数是user_id 这个接口需要拦截掉，获取到Response头中的sid。
      */
+    @FormUrlEncoded
     @POST("/restapi/eus/login/login_by_mobile")
-    Observable<ResponseBody> loginByMobile(@Field("mobile") String mobile, @Field("validateToken") String validateToken
-            , @Field("validateCode") String validateCode);
+    Observable<ResponseHeader> loginByMobile(@Field("mobile") String mobile, @Field("validate_token") String validateToken
+            , @Field("validate_code") String validateCode);
 
 
     /**
@@ -53,6 +58,7 @@ public interface ApiService {
      * @param sign 签名信息这个在QQ登陆后获取的Cookie里面有
      * @return
      */
+    @FormUrlEncoded
     @POST("/restapi/marketing/hongbao/weixin/{openId}/change")
     Observable<ResponseBody> changeMobile(@Path("openId")String openId,@Field("phone") String mobile, @Field("sign") String sign);
 
@@ -81,6 +87,7 @@ public interface ApiService {
      * @param weixin_username 微信用户昵称。
      * @return
      */
+    @FormUrlEncoded
     @POST("/restapi/marketing/promotion/weixin/{openId}")
     Observable<ResponseBody> touchRedPackage(@Path("openId") String openId,
                                              @Path("device_id") String device_id,

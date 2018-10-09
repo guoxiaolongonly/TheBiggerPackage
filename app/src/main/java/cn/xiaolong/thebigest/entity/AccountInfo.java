@@ -20,6 +20,11 @@ public class AccountInfo {
     public String time;//领取的日期
     public int perDaycount;//当日领取的次数
     public int allTimeCount;//总次数
+
+
+    public AccountInfo() {
+    }
+
     public AccountInfo(String sign, String openId, String QQ) {
         this.sign = sign;
         this.openId = openId;

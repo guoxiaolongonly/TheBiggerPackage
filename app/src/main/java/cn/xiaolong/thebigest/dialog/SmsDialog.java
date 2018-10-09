@@ -1,6 +1,7 @@
 package cn.xiaolong.thebigest.dialog;
 
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +29,32 @@ public class SmsDialog extends BaseAnimDialog {
     private OnSubmitListener onSubmitListener;
     private View.OnClickListener onGetVerCodeClickListener;
     private TextView tvSubmit;
+    /**
+     * CountDownTimer 实现倒计时
+     */
+    private CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            String value = String.valueOf((int) (millisUntilFinished / 1000));
+            tvGetVerCode.setText(value);
+        }
+
+        @Override
+        public void onFinish() {
+            tvGetVerCode.setEnabled(true);
+            tvGetVerCode.setText("重新获取");
+        }
+    };
+
 
     protected SmsDialog(Context context) {
         super(context);
+    }
+
+
+    public void startCountDown() {
+        countDownTimer.start();
+        tvGetVerCode.setEnabled(false);
     }
 
     @Override
@@ -50,17 +74,15 @@ public class SmsDialog extends BaseAnimDialog {
 
     private void initData() {
         tvTitle.setText(title);
-        tvGetVerCode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onGetVerCodeClickListener != null) {
-                    String phone = etPhone.getText().toString();
-                    if (TextUtils.isEmpty(phone)) {
-                        Toast.makeText(mContext, "手机号码不能为空！", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    onGetVerCodeClickListener.onClick(v);
+        tvGetVerCode.setOnClickListener(v -> {
+            if (onGetVerCodeClickListener != null) {
+                String phone = etPhone.getText().toString();
+                if (TextUtils.isEmpty(phone)) {
+                    Toast.makeText(mContext, "手机号码不能为空！", Toast.LENGTH_LONG).show();
+                    return;
                 }
+                v.setTag(phone);
+                onGetVerCodeClickListener.onClick(v);
             }
         });
         tvSubmit.setOnClickListener(v -> {
@@ -124,7 +146,16 @@ public class SmsDialog extends BaseAnimDialog {
         }
     }
 
-    private void setAccountInfo(AccountInfo accountInfo) {
+    public void setAccountInfo(AccountInfo accountInfo) {
+        if (this.accountInfo == accountInfo) {
+            return;
+        }
+        if(this.accountInfo!=null) {
+            countDownTimer.onFinish();
+            tvGetVerCode.setText("获取验证码");
+            etVerCode.setText("");
+            etPhone.setText("");
+        }
         this.accountInfo = accountInfo;
     }
 

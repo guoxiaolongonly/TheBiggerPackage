@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
@@ -27,7 +28,7 @@ public class PersistentCookieStore {
     private static final String LOG_TAG = "PersistentCookieStore";
     private static final String COOKIE_PREFS = "Cookies_Prefs";
 
-    private final Map<String, ConcurrentHashMap<String, Cookie>> cookies;
+    private final Map<String, ConcurrentMap<String, Cookie>> cookies;
     private final SharedPreferences cookiePrefs;
 
     public PersistentCookieStore(Context context) {
@@ -74,7 +75,10 @@ public class PersistentCookieStore {
 
         //讲cookies持久化到本地
         SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        prefsWriter.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
+        if(cookies.get(url.host())!=null)
+        {
+            prefsWriter.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
+        }
         prefsWriter.putString(name, encodeCookie(new SerializableOkHttpCookies(cookie)));
         prefsWriter.apply();
     }

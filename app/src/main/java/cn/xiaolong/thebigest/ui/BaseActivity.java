@@ -33,7 +33,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     public void showLoading(String text)
     {
-
+        showLoadingDialog(text);
     }
 
     public void showLoadingDialog(String text) {
@@ -63,7 +63,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     @Override
     public void showError(Throwable error) {
-
+        showToast(error.getMessage());
     }
 
     protected T initPresenter(){

@@ -22,37 +22,47 @@ import cn.xiaolong.thebigest.view.IBindView;
  * @since 2018/10/8 10:58
  */
 public class BindPresenter extends BasePresenter<IBindView> {
+
+
+    private String validateToken;
     private List<AccountInfo> accountInfos;
 
     public BindPresenter(Activity activity) {
         super(activity);
     }
 
+    //为了保证流统一销毁和异常处理，请调用getSubscribe处理返回数据
+    public void getMobileCode(String mobile, String captchaHash, String captchaValue) {
+        DataManager.getMobileCode(mobile, "", "").subscribe(getSubscriber(s -> {
+            this.validateToken = s.validate_token;
+            mView.onGetSmsCodeSuccess(validateToken);
+        }));
+    }
 
-    public void getMobileCode(String mobile, String captchaHash, String captchaValue)
-    {
-        DataManager.getMobileCode(mobile,"","").subscribe(s -> {
-            mView.onGetQrCodeSuccess(s);
-        });
+    /**
+     * @param accountInfo  传Account Info 是为了鉴别是哪个Account的信息好做绑定
+     * @param mobile
+     * @param validateCode
+     */
+    public void login(AccountInfo accountInfo, String mobile, String validateCode) {
+        DataManager.loginByMobile(mobile, validateToken, validateCode).subscribe(getSubscriber(s -> {
+            mView.onLoginSuccess(accountInfo, s);
+        }));
     }
 
     public void getCache() {
         String accountCache = (String) SPHelp.getAppParam(BuildConfig.KEY_ACCOUNT_CACHE, "");
-        if(!TextUtils.isEmpty(accountCache)) {
+        if (!TextUtils.isEmpty(accountCache)) {
             accountInfos = JSON.parseArray(accountCache, AccountInfo.class);
-        }else
-        {
-            accountInfos=new ArrayList<>();
+        } else {
+            accountInfos = new ArrayList<>();
         }
         mView.onGetListSuccess(accountInfos);
     }
 
     public void cache(List<AccountInfo> accountInfoList) {
-        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSON(accountInfoList));
+        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSONString(accountInfoList));
         mView.cacheSuccess();
     }
 
-    public void getQrCode(AccountInfo accountInfo) {
-
-    }
 }

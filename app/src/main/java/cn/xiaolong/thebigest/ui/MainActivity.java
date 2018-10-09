@@ -53,7 +53,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     private void initData() {
-
     }
 
     private void setListener() {

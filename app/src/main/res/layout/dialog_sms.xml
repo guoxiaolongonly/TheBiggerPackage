@@ -39,6 +39,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:hint="验证码"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
 

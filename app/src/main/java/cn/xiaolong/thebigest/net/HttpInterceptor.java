@@ -45,7 +45,17 @@ public class HttpInterceptor implements Interceptor {
         }
         printRequestLog(requestBuilder.build());
         Response response = chain.proceed(requestBuilder.build());
+
         printResponseLog(response);
+        /**
+         * 哼
+         */
+        if(original.url().toString().contains("login_by_mobile"))
+        {
+            response=response.newBuilder()
+                    .body(ResponseBody.create(response.body().contentType(),com.alibaba.fastjson.JSON.toJSONString(response.headers())))
+                    .build();
+        }
         return response;
     }
 

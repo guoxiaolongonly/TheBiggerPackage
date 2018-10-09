@@ -1,11 +1,16 @@
 package cn.xiaolong.thebigest.net;
 
 
+import android.text.TextUtils;
+
+import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 
 /**
  * <描述功能>
@@ -63,16 +68,32 @@ public class DataManager {
      * }
      */
     public static Observable<String> getLuckyNumber(String sn) {
-        return Dao.getMainApiService().getLuckyNumber(sn).flatMap(responseBody -> {
-            return Observable.just(responseBody.string());
-        }).compose(observableTransformer());
+        return Dao.getMainApiService().getLuckyNumber(sn)
+                .flatMap(responseBody -> {
+                    return Observable.just(responseBody.string());
+                })
+                .compose(observableTransformer());
     }
 
-    public static Observable<String> getMobileCode(String mobile, String captchaHash
+    public static Observable<TokenBean> getMobileCode(String mobile, String captchaHash
             , String captchaValue) {
-        return Dao.getMainApiService().getMobileCode(mobile,captchaHash,captchaValue).flatMap(responseBody -> {
-            return Observable.just(responseBody.string());
-        }).compose(observableTransformer());
+        return Dao.getMainApiService().getMobileCode(mobile, captchaHash, captchaValue)
+                .flatMap(responseBody -> {
+                    if (responseBody == null || TextUtils.isEmpty(responseBody.validate_token)) {
+                        return Observable.error(new Throwable("Response Error"));
+                    } else {
+                        return Observable.just(responseBody);
+                    }
+                })
+                .compose(observableTransformer());
+    }
+
+    public static Observable<String> loginByMobile(String mobile, String validateToken
+            , String validateCode) {
+        return Dao.getMainApiService()
+                .loginByMobile(mobile, validateToken, validateCode)
+                .flatMap(responseBody -> Observable.just(responseBody.headers.toString()))
+                .compose(observableTransformer());
     }
 
     /**
@@ -89,7 +110,10 @@ public class DataManager {
     private static <T> Function<Throwable, Observable<? extends T>> errorResumeFunc() {
         return throwable -> {
             throwable.printStackTrace();
-            return Observable.error(throwable);
+            ResponseBody body = ((HttpException) throwable).response().errorBody();
+            return Observable.error(new Throwable(body.string()));
         };
     }
+
+
 }
