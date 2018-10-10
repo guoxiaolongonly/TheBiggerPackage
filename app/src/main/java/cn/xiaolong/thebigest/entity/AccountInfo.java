@@ -14,18 +14,25 @@ public class AccountInfo {
 
     public String sign;  //eleme_key
     public String openId; //openId
+    public String cookie; //cookie
     public String QQ; //作为QQ号码判断
-    public String sid; //手机号码登录后会有一个sid
+    public String sid = "KPli0UVohktewRYTEA2Rkt4zKabfk6kHXUDQ"; //手机号码登录后会有一个sid
     public boolean isValid = true; //作为有效性判断
     public String time;//领取的日期
     public int perDaycount;//当日领取的次数
     public int allTimeCount;//总次数
+    public String user_id = "20475540";
+    public String headerurl;
+    public String nickname;
+    public String unionId;
+    public String phoneNumber;
 
 
     public AccountInfo() {
     }
 
-    public AccountInfo(String sign, String openId, String QQ) {
+    public AccountInfo(String cookie,String sign, String openId, String QQ) {
+        this.cookie=cookie;
         this.sign = sign;
         this.openId = openId;
         this.QQ = QQ;

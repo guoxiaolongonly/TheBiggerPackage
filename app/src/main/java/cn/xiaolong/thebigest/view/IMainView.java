@@ -1,6 +1,8 @@
 package cn.xiaolong.thebigest.view;
 
-/**
+import java.util.List;
+
+import cn.xiaolong.thebigest.entity.AccountInfo; /**
  * <描述功能>
  *
  * @author xiaolong 719243738@qq.com
@@ -12,4 +14,8 @@ public interface IMainView  extends ILoadingView{
     void onGetLuckyNumberSuccess(String luckyNumber);
 
     void getSnAndLuckyNumSuccess(String sn,String luckNumber);
+
+    void touchSuccess(String position);
+
+    void onGetListSuccess(List<AccountInfo> accountInfoList);
 }

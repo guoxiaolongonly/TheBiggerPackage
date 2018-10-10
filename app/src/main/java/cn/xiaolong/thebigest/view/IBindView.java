@@ -18,5 +18,5 @@ public interface IBindView extends ILoadingView {
 
     void onGetSmsCodeSuccess(String result);
 
-    void onLoginSuccess(AccountInfo accountInfo, String result);
+    void onLoginSuccess(AccountInfo accountInfo, AccountInfo result);
 }

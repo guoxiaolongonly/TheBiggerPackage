@@ -1,10 +1,15 @@
 package cn.xiaolong.thebigest.net;
 
 
+import android.text.TextUtils;
+
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 
 import cn.xiaolong.thebigest.util.LogUtil;
 import okhttp3.FormBody;
@@ -52,8 +57,26 @@ public class HttpInterceptor implements Interceptor {
          */
         if(original.url().toString().contains("login_by_mobile"))
         {
+            List<String> cookies =response.headers("set-cookie");
+            String sid="";
+            if(cookies!=null&&cookies.size()>0)
+            {
+                for(String header :cookies)
+                {
+                    String sids[] =header.split("SID=");
+                    if(sids.length>1)
+                    {
+                        sid =sids[1].split(";")[0];
+                        break;
+                    }
+                }
+            }
+            JSONObject jsonObject = com.alibaba.fastjson.JSON.parseObject(response.body().string());
+            if(!TextUtils.isEmpty(sid)) {
+                jsonObject.put("sid",sid);
+            }
             response=response.newBuilder()
-                    .body(ResponseBody.create(response.body().contentType(),com.alibaba.fastjson.JSON.toJSONString(response.headers())))
+                    .body(ResponseBody.create(response.body().contentType(), jsonObject.toJSONString()))
                     .build();
         }
         return response;

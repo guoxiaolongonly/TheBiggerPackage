@@ -17,6 +17,7 @@ import cn.xiaolong.thebigest.dialog.AccountAddDialog;
 import cn.xiaolong.thebigest.dialog.SmsDialog;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.presenter.BindPresenter;
+import cn.xiaolong.thebigest.util.AccountInfoRandomGenerator;
 import cn.xiaolong.thebigest.view.IBindView;
 
 /**
@@ -32,6 +33,7 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     private SmallAccountAdapter smallAccountAdapter;
     private AccountAddDialog accountAddDialog;
     private SmsDialog smsDialog;
+
     @Override
     protected BindPresenter initPresenter() {
         return new BindPresenter(this);
@@ -55,7 +57,7 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
 
     private void setListener() {
         smallAccountAdapter.setOnDeleteClickListener(v -> {
-            AccountInfo accountInfo= (AccountInfo) v.getTag();
+            AccountInfo accountInfo = (AccountInfo) v.getTag();
             smallAccountAdapter.remove(accountInfo);
             showToast("删除成功！");
             presenter.cache(smallAccountAdapter.getItems());
@@ -81,34 +83,34 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
 
     private void initView() {
         rvContent = findViewById(R.id.rvContent);
-        rvContent.setAdapter(smallAccountAdapter=new SmallAccountAdapter(this,new ArrayList<>()));
-        rvContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        rvContent.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
-        accountAddDialog=new AccountAddDialog.Builder(this).setAccountInfo(null)
+        rvContent.setAdapter(smallAccountAdapter = new SmallAccountAdapter(this, new ArrayList<>()));
+        rvContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvContent.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        accountAddDialog = new AccountAddDialog.Builder(this).setAccountInfo(null)
                 .setTitle("添加小号")
                 .setListener((oldAccount, newAccount) -> {
-                    if(oldAccount!=null) {
-                        smallAccountAdapter.replaceItem(oldAccount,newAccount);
+                    if (oldAccount != null) {
+                        smallAccountAdapter.replaceItem(oldAccount, newAccount);
                         showToast("修改完成！");
-                    }else
-                    {
+                    } else {
+                        AccountInfoRandomGenerator.generate(newAccount);
                         smallAccountAdapter.addItem(newAccount);
                         showToast("添加完成！");
                     }
                     presenter.cache(smallAccountAdapter.getItems());
                 }).build();
 
-        smsDialog =new SmsDialog.Builder(this).setAccountInfo(null).setTitle("手机验证").setListener((accountInfo, mobile, verCode) -> {
-            presenter.login(accountInfo,mobile,verCode);
+        smsDialog = new SmsDialog.Builder(this).setAccountInfo(null).setTitle("手机验证").setListener((accountInfo, mobile, verCode) -> {
+            presenter.login(accountInfo, mobile, verCode);
         }).setOnGetVerCodeClickListener(v -> {
             String phone = (String) v.getTag();
-            presenter.getMobileCode(phone,"","");
+            presenter.getMobileCode(phone, "", "");
         }).build();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id =item.getItemId();
+        int id = item.getItemId();
         if (id == R.id.action_add) {
             accountAddDialog.setAccountInfo(null);
             accountAddDialog.setTitleText("添加");
@@ -135,7 +137,10 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     }
 
     @Override
-    public void onLoginSuccess(AccountInfo accountInfo, String result) {
+    public void onLoginSuccess(AccountInfo accountInfo, AccountInfo result) {
+        accountInfo.sid = result.sid;
+        accountInfo.user_id = result.user_id;
+        cacheSuccess();
         showToast("sid，获取成功！");
     }
 }

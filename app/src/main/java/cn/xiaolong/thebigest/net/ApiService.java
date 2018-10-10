@@ -1,13 +1,14 @@
 package cn.xiaolong.thebigest.net;
 
 
-import cn.xiaolong.thebigest.entity.ResponseHeader;
+import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -47,7 +48,7 @@ public interface ApiService {
      */
     @FormUrlEncoded
     @POST("/restapi/eus/login/login_by_mobile")
-    Observable<ResponseHeader> loginByMobile(@Field("mobile") String mobile, @Field("validate_token") String validateToken
+    Observable<AccountInfo> loginByMobile(@Field("mobile") String mobile, @Field("validate_token") String validateToken
             , @Field("validate_code") String validateCode);
 
 
@@ -78,7 +79,7 @@ public interface ApiService {
      * @param device_id 默认为空就好
      * @param sn  这个可以直接拿url获取
      * @param hardware_id 为空
-     * @param phone 为空
+     * @param phone 不可控
      * @param platform  默认填0
      * @param sign 签名信息 就是登录后的sign
      * @param track_id 为空
@@ -89,16 +90,17 @@ public interface ApiService {
      */
     @FormUrlEncoded
     @POST("/restapi/marketing/promotion/weixin/{openId}")
-    Observable<ResponseBody> touchRedPackage(@Path("openId") String openId,
-                                             @Path("device_id") String device_id,
-                                             @Path("group_sn") String sn,
-                                             @Path("hardware_id") String hardware_id,
-                                             @Path("phone") String phone,
-                                             @Path("platform") String platform,
-                                             @Path("sign") String sign,
-                                             @Path("track_id") String track_id,
-                                             @Path("unionid") String unionid,
-                                             @Path("weixin_avatar") String weixin_avatar,
-                                             @Path("weixin_username") String weixin_username);
+    Observable<ResponseBody> touchRedPackage(@Header("cookie") String cookie,
+                                             @Path("openId") String openId,
+                                             @Field("device_id") String device_id,
+                                             @Field("group_sn") String sn,
+                                             @Field("hardware_id") String hardware_id,
+                                             @Field("phone") String phone,
+                                             @Field("platform") String platform,
+                                             @Field("sign") String sign,
+                                             @Field("track_id") String track_id,
+                                             @Field("unionid") String unionid,
+                                             @Field("weixin_avatar") String weixin_avatar,
+                                             @Field("weixin_username") String weixin_username);
 
 }

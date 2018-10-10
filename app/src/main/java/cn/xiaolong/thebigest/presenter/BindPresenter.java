@@ -33,7 +33,7 @@ public class BindPresenter extends BasePresenter<IBindView> {
 
     //为了保证流统一销毁和异常处理，请调用getSubscribe处理返回数据
     public void getMobileCode(String mobile, String captchaHash, String captchaValue) {
-        DataManager.getMobileCode(mobile, "", "").subscribe(getSubscriber(s -> {
+        DataManager.getMobileCode(mobile, captchaHash, captchaValue).subscribe(getSubscriber(s -> {
             this.validateToken = s.validate_token;
             mView.onGetSmsCodeSuccess(validateToken);
         }));
@@ -46,6 +46,7 @@ public class BindPresenter extends BasePresenter<IBindView> {
      */
     public void login(AccountInfo accountInfo, String mobile, String validateCode) {
         DataManager.loginByMobile(mobile, validateToken, validateCode).subscribe(getSubscriber(s -> {
+            accountInfo.phoneNumber = mobile;
             mView.onLoginSuccess(accountInfo, s);
         }));
     }

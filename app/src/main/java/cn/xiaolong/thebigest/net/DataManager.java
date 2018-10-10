@@ -3,6 +3,7 @@ package cn.xiaolong.thebigest.net;
 
 import android.text.TextUtils;
 
+import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
@@ -88,13 +89,33 @@ public class DataManager {
                 .compose(observableTransformer());
     }
 
-    public static Observable<String> loginByMobile(String mobile, String validateToken
+    public static Observable<AccountInfo> loginByMobile(String mobile, String validateToken
             , String validateCode) {
         return Dao.getMainApiService()
                 .loginByMobile(mobile, validateToken, validateCode)
-                .flatMap(responseBody -> Observable.just(responseBody.headers.toString()))
+                .flatMap(responseBody -> Observable.just(responseBody))
                 .compose(observableTransformer());
     }
+
+
+    public static Observable<String> touchRedPackage(String cookie,
+                                                     String openId,
+                                                     String device_id,
+                                                     String sn,
+                                                     String hardware_id,
+                                                     String phone,
+                                                     String platform,
+                                                     String sign,
+                                                     String track_id,
+                                                     String unionid,
+                                                     String weixin_avatar,
+                                                     String weixin_username) {
+        return Dao.getMainApiService()
+                .touchRedPackage(cookie, openId, device_id, sn, hardware_id, phone, platform, sign, track_id, unionid, weixin_avatar, weixin_username)
+                .flatMap(responseBody -> Observable.just(responseBody.string()))
+                .compose(observableTransformer());
+    }
+
 
     /**
      * @param <T>

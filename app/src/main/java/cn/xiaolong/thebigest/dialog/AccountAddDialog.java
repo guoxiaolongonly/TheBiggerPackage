@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.URLDecoder;
+
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 
@@ -20,8 +22,9 @@ import cn.xiaolong.thebigest.entity.AccountInfo;
  */
 public class AccountAddDialog extends BaseAnimDialog {
     private EditText etQQ;
-    private EditText etOpenid;
-    private EditText etSign;
+//    private EditText etOpenid;
+//    private EditText etSign;
+    private EditText etCookie;
     private TextView tvTitle;
     private AccountInfo accountInfo;
     private String title;
@@ -41,8 +44,9 @@ public class AccountAddDialog extends BaseAnimDialog {
     protected void initView(View contentView) {
         tvTitle = contentView.findViewById(R.id.tvTitle);
         etQQ = contentView.findViewById(R.id.etQQ);
-        etOpenid = contentView.findViewById(R.id.etOpenid);
-        etSign = contentView.findViewById(R.id.etSign);
+//        etOpenid = contentView.findViewById(R.id.etOpenid);
+//        etSign = contentView.findViewById(R.id.etSign);
+        etCookie=contentView.findViewById(R.id.etCookie);
         tvSubmit = contentView.findViewById(R.id.tvSubmit);
         initData();
     }
@@ -50,28 +54,53 @@ public class AccountAddDialog extends BaseAnimDialog {
     private void initData() {
         tvTitle.setText(title);
         if(accountInfo!=null) {
-            etOpenid.setText(accountInfo.openId);
-            etSign.setText(accountInfo.sign);
+//            etOpenid.setText(accountInfo.openId);
+//            etSign.setText(accountInfo.sign);
+            etCookie.setText(accountInfo.cookie);
             etQQ.setText(accountInfo.QQ);
         }
         tvSubmit.setOnClickListener(v -> {
-            String openid = etOpenid.getText().toString();
-            String sign = etSign.getText().toString();
+//            String openid = etOpenid.getText().toString();
+//            String sign = etSign.getText().toString();
             String QQ = etQQ.getText().toString();
-            if (TextUtils.isEmpty(etOpenid.getText().toString())) {
-                Toast.makeText(mContext, "Openid不能为空！", Toast.LENGTH_LONG).show();
+            String cookie =etCookie.getText().toString();
+            if (TextUtils.isEmpty(etCookie.getText().toString())) {
+                Toast.makeText(mContext, "cookie不能为空！", Toast.LENGTH_LONG).show();
                 return;
             }
-            if (TextUtils.isEmpty(etSign.getText().toString())) {
-                Toast.makeText(mContext, "sign不能为空！", Toast.LENGTH_LONG).show();
+//            if (TextUtils.isEmpty(etSign.getText().toString())) {
+//                Toast.makeText(mContext, "sign不能为空！", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+            if (cookie.indexOf("snsInfo[wx2a416286e96100ed]=") == -1
+                    && cookie.indexOf("snsInfo[101204453]=") == -1) {
+               Toast.makeText(mContext,"请确保内容包含：snsInfo[wx2a416286e96100ed] 或 snsInfo[101204453]",Toast.LENGTH_LONG).show();
+               return;
+            }
+            cookie = URLDecoder.decode(cookie);
+            String openid="";
+            if(cookie.contains("openid\":\"")) {
+                openid = cookie.split("openid\":\"")[1].split("\",")[0];
+            }else
+            {
+                Toast.makeText(mContext,"Cookie未携带openId,请检测cookie是否正确！",Toast.LENGTH_LONG).show();
                 return;
             }
+            String sign="";
+            if(cookie.contains("eleme_key\":\"")) {
+                sign = cookie.split("eleme_key\":\"")[1].split("\",")[0];
+            }else
+            {
+                Toast.makeText(mContext,"Cookie未携带eleme_key,请检测cookie是否正确！",Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if (TextUtils.isEmpty(etQQ.getText().toString())) {
                 Toast.makeText(mContext, "QQ号码不能为空！", Toast.LENGTH_LONG).show();
                 return;
             }
             if (onSubmitListener != null) {
-                onSubmitListener.add(accountInfo,new AccountInfo(openid,sign,QQ));
+                onSubmitListener.add(accountInfo,new AccountInfo(cookie,openid,sign,QQ));
             }
             dismiss();
         });
@@ -126,19 +155,15 @@ public class AccountAddDialog extends BaseAnimDialog {
         this.accountInfo = accountInfo;
         if(accountInfo==null)
         {
-            accountInfo=new AccountInfo("","","");
+            accountInfo=new AccountInfo("","","","");
         }
         if(etQQ!=null)
         {
             etQQ.setText(accountInfo.QQ);
         }
-        if(etSign!=null)
+        if(etCookie!=null)
         {
-            etSign.setText(accountInfo.sign);
-        }
-        if(etOpenid!=null)
-        {
-            etOpenid.setText(accountInfo.openId);
+            etCookie.setText(accountInfo.cookie);
         }
     }
 
