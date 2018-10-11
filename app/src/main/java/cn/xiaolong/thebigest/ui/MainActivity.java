@@ -15,6 +15,7 @@ import java.util.List;
 import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.presenter.MainPresenter;
 import cn.xiaolong.thebigest.util.LogUtil;
 import cn.xiaolong.thebigest.util.SPHelp;
@@ -22,7 +23,7 @@ import cn.xiaolong.thebigest.view.IMainView;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements IMainView {
     private EditText etUrl;
-//    private EditText tvPhoneNumber;
+    //    private EditText tvPhoneNumber;
     private TextView tvUrlParseResult;
     private TextView tvSubmit;
     private String mCurrentSn;
@@ -68,6 +69,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     private void setListener() {
         tvSubmit.setOnClickListener(v -> {
+            if (accountInfoList.size() == 0) {
+                showToast("你还没有小号，请先通过配置添加小号！");
+                return;
+            }
             presenter.touchPackage(mCurrentSn, accountInfoList.get(index));
             index = (index + 1) % accountInfoList.size();
         });
@@ -101,14 +106,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     @Override
-    public void onGetLuckyNumberSuccess(String luckyNumber) {
-        LogUtil.d(luckyNumber);
+    public void onGetLuckyNumberSuccess(String result) {
+        if (result.contains("lucky_number\": ")) {
+            String luckyNumber = result.split("lucky_number\": ")[1].split(",")[0];
+            tvUrlParseResult.setText("红包地址正确,最大红包为:" + luckyNumber);
+        } else {
+            tvUrlParseResult.setText("红包地址有误");
+        }
+
+        LogUtil.d(result);
     }
 
     @Override
     public void getSnAndLuckyNumSuccess(String sn, String luckNumber) {
         if (!TextUtils.isEmpty(sn)) {
-            tvUrlParseResult.setText("红包地址正确,最大红包为:" + luckNumber);
+            presenter.getLuckyNumber(sn);
             mCurrentSn = sn;
             SPHelp.setAppParam(BuildConfig.KEY_SN, sn);
             tvSubmit.setEnabled(true);
@@ -119,8 +131,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     @Override
-    public void touchSuccess(String position) {
-        LogUtil.d(position);
+    public void touchSuccess(PackageInfo packageInfo) {
+        LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.ret_code + "金额：" + packageInfo.promotion_items.get(0).amount);
     }
 
     @Override

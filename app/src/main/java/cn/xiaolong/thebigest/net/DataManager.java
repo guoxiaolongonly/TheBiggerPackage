@@ -3,8 +3,14 @@ package cn.xiaolong.thebigest.net;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.ErrorResponse;
+import cn.xiaolong.thebigest.entity.ErrorThrowable;
+import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
+import cn.xiaolong.thebigest.util.LogUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -93,26 +99,35 @@ public class DataManager {
             , String validateCode) {
         return Dao.getMainApiService()
                 .loginByMobile(mobile, validateToken, validateCode)
-                .flatMap(responseBody -> Observable.just(responseBody))
+                .flatMap(responseBody ->
+                        {
+                            LogUtil.d(responseBody.toString());
+                            return Observable.just(responseBody);
+                        }
+                )
                 .compose(observableTransformer());
     }
 
 
-    public static Observable<String> touchRedPackage(String cookie,
-                                                     String openId,
-                                                     String device_id,
-                                                     String sn,
-                                                     String hardware_id,
-                                                     String phone,
-                                                     String platform,
-                                                     String sign,
-                                                     String track_id,
-                                                     String unionid,
-                                                     String weixin_avatar,
-                                                     String weixin_username) {
+    public static Observable<PackageInfo> touchRedPackage(String cookie,
+                                                          String openId,
+                                                          String device_id,
+                                                          String sn,
+                                                          String hardware_id,
+                                                          String method,
+                                                          String phone,
+                                                          String platform,
+                                                          String sign,
+                                                          String track_id,
+                                                          String unionid,
+                                                          String weixin_avatar,
+                                                          String weixin_username) {
         return Dao.getMainApiService()
-                .touchRedPackage(cookie, openId, device_id, sn, hardware_id, phone, platform, sign, track_id, unionid, weixin_avatar, weixin_username)
-                .flatMap(responseBody -> Observable.just(responseBody.string()))
+                .touchRedPackage(cookie, openId, device_id, sn, hardware_id, method, phone, platform, sign, track_id, unionid, weixin_avatar, weixin_username)
+                .flatMap(responseBody -> {
+                    LogUtil.d(responseBody.toString());
+                    return Observable.just(responseBody);
+                })
                 .compose(observableTransformer());
     }
 
@@ -132,7 +147,13 @@ public class DataManager {
         return throwable -> {
             throwable.printStackTrace();
             ResponseBody body = ((HttpException) throwable).response().errorBody();
-            return Observable.error(new Throwable(body.string()));
+            //如果不是网络错误可能会是本地错误
+            ErrorResponse errorResponse = new ErrorResponse("未知错误，可联系作者反馈。", ((HttpException) throwable).message(), 0x66);
+            if (!TextUtils.isEmpty(body.string())) {
+                errorResponse = (ErrorResponse) JSON.parse(body.string());
+                errorResponse.errorCode = 0x110;
+            }
+            return Observable.error(new ErrorThrowable(errorResponse.errorCode, errorResponse.message));
         };
     }
 

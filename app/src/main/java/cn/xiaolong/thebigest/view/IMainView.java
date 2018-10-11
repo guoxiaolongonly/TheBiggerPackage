@@ -2,7 +2,10 @@ package cn.xiaolong.thebigest.view;
 
 import java.util.List;
 
-import cn.xiaolong.thebigest.entity.AccountInfo; /**
+import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.PackageInfo;
+
+/**
  * <描述功能>
  *
  * @author xiaolong 719243738@qq.com
@@ -15,7 +18,7 @@ public interface IMainView  extends ILoadingView{
 
     void getSnAndLuckyNumSuccess(String sn,String luckNumber);
 
-    void touchSuccess(String position);
+    void touchSuccess(PackageInfo position);
 
     void onGetListSuccess(List<AccountInfo> accountInfoList);
 }

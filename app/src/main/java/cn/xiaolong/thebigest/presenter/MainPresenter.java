@@ -59,15 +59,15 @@ public class MainPresenter extends BasePresenter<IMainView> {
      * @param sn
      */
     public void getLuckyNumber(String sn) {
-        DataManager.getLuckyNumber(sn).subscribe(getSubscriber(s -> {
+        DataManager.getLuckyNumber(sn).subscribe(getSubscriberNoProgress(s -> {
             mView.onGetLuckyNumberSuccess(s);
         }));
     }
 
 
     public void touchPackage(String sn, AccountInfo accountInfo) {
-        String cookie = accountInfo.openId;
-        DataManager.touchRedPackage(cookie, accountInfo.openId, "", sn, "", accountInfo.phoneNumber,
+        String cookie = "SID="+accountInfo.sid;
+        DataManager.touchRedPackage(cookie, accountInfo.openId, "", sn, "", accountInfo.method, accountInfo.phoneNumber,
                 "0", accountInfo.sign, "", accountInfo.unionId, accountInfo.headerurl, accountInfo.nickname)
                 .subscribe(getSubscriber(s -> mView.touchSuccess(s)));
     }
@@ -76,7 +76,7 @@ public class MainPresenter extends BasePresenter<IMainView> {
         String accountCache = (String) SPHelp.getAppParam(BuildConfig.KEY_ACCOUNT_CACHE, "");
         List<AccountInfo> accountInfoList;
         if (!TextUtils.isEmpty(accountCache)) {
-           accountInfoList = JSON.parseArray(accountCache, AccountInfo.class);
+            accountInfoList = JSON.parseArray(accountCache, AccountInfo.class);
         } else {
             accountInfoList = new ArrayList<>();
         }

@@ -100,7 +100,7 @@ public class AccountAddDialog extends BaseAnimDialog {
                 return;
             }
             if (onSubmitListener != null) {
-                onSubmitListener.add(accountInfo,new AccountInfo(cookie,openid,sign,QQ));
+                onSubmitListener.add(accountInfo,new AccountInfo(cookie,sign,openid,QQ));
             }
             dismiss();
         });

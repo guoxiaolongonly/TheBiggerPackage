@@ -16,16 +16,17 @@ public class AccountInfo {
     public String openId; //openId
     public String cookie; //cookie
     public String QQ; //作为QQ号码判断
-    public String sid = "KPli0UVohktewRYTEA2Rkt4zKabfk6kHXUDQ"; //手机号码登录后会有一个sid
+    public String sid = ""; //手机号码登录后会有一个sid
     public boolean isValid = true; //作为有效性判断
     public String time;//领取的日期
+    public String method="phone";
     public int perDaycount;//当日领取的次数
     public int allTimeCount;//总次数
-    public String user_id = "20475540";
-    public String headerurl;
-    public String nickname;
-    public String unionId;
-    public String phoneNumber;
+    public String user_id = "";
+    public String headerurl="";
+    public String nickname="";
+    public String unionId="fuck";
+    public String phoneNumber="";
 
 
     public AccountInfo() {
@@ -36,5 +37,26 @@ public class AccountInfo {
         this.sign = sign;
         this.openId = openId;
         this.QQ = QQ;
+    }
+
+    @Override
+    public String toString() {
+        return "AccountInfo{" +
+                "sign='" + sign + '\'' +
+                ", openId='" + openId + '\'' +
+                ", cookie='" + cookie + '\'' +
+                ", QQ='" + QQ + '\'' +
+                ", sid='" + sid + '\'' +
+                ", isValid=" + isValid +
+                ", time='" + time + '\'' +
+                ", method='" + method + '\'' +
+                ", perDaycount=" + perDaycount +
+                ", allTimeCount=" + allTimeCount +
+                ", user_id='" + user_id + '\'' +
+                ", headerurl='" + headerurl + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", unionId='" + unionId + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
     }
 }

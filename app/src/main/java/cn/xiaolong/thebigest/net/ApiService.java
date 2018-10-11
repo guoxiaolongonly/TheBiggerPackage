@@ -2,6 +2,7 @@ package cn.xiaolong.thebigest.net;
 
 
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -90,17 +91,18 @@ public interface ApiService {
      */
     @FormUrlEncoded
     @POST("/restapi/marketing/promotion/weixin/{openId}")
-    Observable<ResponseBody> touchRedPackage(@Header("cookie") String cookie,
-                                             @Path("openId") String openId,
-                                             @Field("device_id") String device_id,
-                                             @Field("group_sn") String sn,
-                                             @Field("hardware_id") String hardware_id,
-                                             @Field("phone") String phone,
-                                             @Field("platform") String platform,
-                                             @Field("sign") String sign,
-                                             @Field("track_id") String track_id,
-                                             @Field("unionid") String unionid,
-                                             @Field("weixin_avatar") String weixin_avatar,
-                                             @Field("weixin_username") String weixin_username);
+    Observable<PackageInfo> touchRedPackage(@Header("Cookie") String cookie,
+                                            @Path("openId") String openId,
+                                            @Field("device_id") String device_id,
+                                            @Field("group_sn") String sn,
+                                            @Field("hardware_id") String hardware_id,
+                                            @Field("method") String method,
+                                            @Field("phone") String phone,
+                                            @Field("platform") String platform,
+                                            @Field("sign") String sign,
+                                            @Field("track_id") String track_id,
+                                            @Field("unionid") String unionid,
+                                            @Field("weixin_avatar") String weixin_avatar,
+                                            @Field("weixin_username") String weixin_username);
 
 }

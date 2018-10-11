@@ -63,8 +63,6 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             presenter.cache(smallAccountAdapter.getItems());
         });
         smallAccountAdapter.setOnGetSidClick(v -> {
-//            AccountInfo accountInfo = (AccountInfo) v.getTag();
-//            presenter.getQrCode(accountInfo);
             smsDialog.setAccountInfo((AccountInfo) v.getTag());
             smsDialog.show();
         });
@@ -89,11 +87,11 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
         accountAddDialog = new AccountAddDialog.Builder(this).setAccountInfo(null)
                 .setTitle("添加小号")
                 .setListener((oldAccount, newAccount) -> {
+                    AccountInfoRandomGenerator.generate(newAccount);
                     if (oldAccount != null) {
                         smallAccountAdapter.replaceItem(oldAccount, newAccount);
                         showToast("修改完成！");
                     } else {
-                        AccountInfoRandomGenerator.generate(newAccount);
                         smallAccountAdapter.addItem(newAccount);
                         showToast("添加完成！");
                     }
@@ -140,7 +138,8 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     public void onLoginSuccess(AccountInfo accountInfo, AccountInfo result) {
         accountInfo.sid = result.sid;
         accountInfo.user_id = result.user_id;
-        cacheSuccess();
+        smallAccountAdapter.notifyDataSetChanged();
+        presenter.cache(smallAccountAdapter.getItems());
         showToast("sid，获取成功！");
     }
 }
