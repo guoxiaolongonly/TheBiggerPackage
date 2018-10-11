@@ -2,7 +2,6 @@ package cn.xiaolong.thebigest.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,6 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
     private List<AccountInfo> accountInfos;
     private Context mContext;
     private View.OnClickListener mOnDeleteClickListener;
-    private View.OnClickListener mOnItemClickListener;
-    private View.OnClickListener mOnGetSidClick;
 
     public SmallAccountAdapter(Context context, List<AccountInfo> accountInfos) {
         this.mContext = context;
@@ -74,13 +71,6 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         mOnDeleteClickListener = onDeleteClickListener;
     }
 
-    public void setOnItemClickListener(View.OnClickListener onItemClickListener) {
-        mOnItemClickListener = onItemClickListener;
-    }
-
-    public void setOnGetSidClick(View.OnClickListener onItemClickListener) {
-        mOnGetSidClick = onItemClickListener;
-    }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.list_item_small_account, parent, false));
@@ -99,45 +89,20 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvQQ;
         private TextView tvDelete;
-        private TextView tvGetSid;
-        private TextView tvSid;
         public ViewHolder(View itemView) {
             super(itemView);
             tvQQ = itemView.findViewById(R.id.tvQQ);
             tvDelete = itemView.findViewById(R.id.tvDelete);
-            tvGetSid = itemView.findViewById(R.id.tvGetSid);
-            tvSid = itemView.findViewById(R.id.tvSid);
         }
 
         public void setData(AccountInfo data) {
-            tvQQ.setText("QQ:"+data.QQ);
-//            String sid ="".equals(data.sid)?"请获取    ":data.sid;
-            tvSid.setText("sid:"+data.sid);
-            if(TextUtils.isEmpty(data.sid))
-            {
-                tvGetSid.setText("请获取");
-            }else{
-                tvGetSid.setText("重新获取");
-            }
+            tvQQ.setText("QQ昵称:"+data.QQ);
             tvDelete.setOnClickListener(v -> {
                 if (mOnDeleteClickListener != null) {
                     v.setTag(data);
                     mOnDeleteClickListener.onClick(v);
                 }
             });
-            itemView.setOnClickListener(v -> {
-                if (mOnDeleteClickListener != null) {
-                    v.setTag(data);
-                    mOnItemClickListener.onClick(v);
-                }
-            });
-            tvGetSid.setOnClickListener(v -> {
-                if (mOnGetSidClick != null) {
-                    v.setTag(data);
-                    mOnGetSidClick.onClick(v);
-                }
-            });
-
         }
     }
 }

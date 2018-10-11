@@ -1,5 +1,6 @@
 package cn.xiaolong.thebigest.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,11 +14,8 @@ import java.util.List;
 
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.adapter.SmallAccountAdapter;
-import cn.xiaolong.thebigest.dialog.AccountAddDialog;
-import cn.xiaolong.thebigest.dialog.SmsDialog;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.presenter.BindPresenter;
-import cn.xiaolong.thebigest.util.AccountInfoRandomGenerator;
 import cn.xiaolong.thebigest.view.IBindView;
 
 /**
@@ -29,10 +27,9 @@ import cn.xiaolong.thebigest.view.IBindView;
  */
 
 public class BindActivity extends BaseActivity<BindPresenter> implements IBindView {
+    public static final int REQUEST_CODE = 0X6220;
     private RecyclerView rvContent;
     private SmallAccountAdapter smallAccountAdapter;
-    private AccountAddDialog accountAddDialog;
-    private SmsDialog smsDialog;
 
     @Override
     protected BindPresenter initPresenter() {
@@ -62,16 +59,6 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             showToast("删除成功！");
             presenter.cache(smallAccountAdapter.getItems());
         });
-        smallAccountAdapter.setOnGetSidClick(v -> {
-            smsDialog.setAccountInfo((AccountInfo) v.getTag());
-            smsDialog.show();
-        });
-
-        smallAccountAdapter.setOnItemClickListener(v -> {
-            accountAddDialog.setAccountInfo((AccountInfo) v.getTag());
-            accountAddDialog.setTitleText("编辑");
-            accountAddDialog.show();
-        });
 
     }
 
@@ -84,38 +71,34 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
         rvContent.setAdapter(smallAccountAdapter = new SmallAccountAdapter(this, new ArrayList<>()));
         rvContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContent.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        accountAddDialog = new AccountAddDialog.Builder(this).setAccountInfo(null)
-                .setTitle("添加小号")
-                .setListener((oldAccount, newAccount) -> {
-                    AccountInfoRandomGenerator.generate(newAccount);
-                    if (oldAccount != null) {
-                        smallAccountAdapter.replaceItem(oldAccount, newAccount);
-                        showToast("修改完成！");
-                    } else {
-                        smallAccountAdapter.addItem(newAccount);
-                        showToast("添加完成！");
-                    }
-                    presenter.cache(smallAccountAdapter.getItems());
-                }).build();
-
-        smsDialog = new SmsDialog.Builder(this).setAccountInfo(null).setTitle("手机验证").setListener((accountInfo, mobile, verCode) -> {
-            presenter.login(accountInfo, mobile, verCode);
-        }).setOnGetVerCodeClickListener(v -> {
-            String phone = (String) v.getTag();
-            presenter.getMobileCode(phone, "", "");
-        }).build();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_add) {
-            accountAddDialog.setAccountInfo(null);
-            accountAddDialog.setTitleText("添加");
-            accountAddDialog.show();
+//            accountAddDialog.setAccountInfo(null);
+//            accountAddDialog.setTitleText("添加");
+//            accountAddDialog.show();
+            startActivityForResult(new Intent(this, LoginActivity.class),REQUEST_CODE);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_CODE&&resultCode==LoginActivity.RESULT_LOGIN) {
+            AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
+            if(accountInfo==null)
+            {
+                return;
+            }
+            smallAccountAdapter.addItem(accountInfo);
+            presenter.cache(smallAccountAdapter.getItems());
+        }
+
     }
 
     @Override
@@ -130,7 +113,6 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
 
     @Override
     public void onGetSmsCodeSuccess(String result) {
-        smsDialog.startCountDown();
         showToast("验证码发送成功！");
     }
 
