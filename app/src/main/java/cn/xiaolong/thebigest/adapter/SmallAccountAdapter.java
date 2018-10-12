@@ -24,6 +24,7 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
     private List<AccountInfo> accountInfos;
     private Context mContext;
     private View.OnClickListener mOnDeleteClickListener;
+    private View.OnLongClickListener mOnLongClickListener;
 
     public SmallAccountAdapter(Context context, List<AccountInfo> accountInfos) {
         this.mContext = context;
@@ -71,6 +72,10 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         mOnDeleteClickListener = onDeleteClickListener;
     }
 
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+        this.mOnLongClickListener = onLongClickListener;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.list_item_small_account, parent, false));
@@ -103,6 +108,13 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
                     mOnDeleteClickListener.onClick(v);
                 }
             });
+            itemView.setOnLongClickListener(v -> {
+                if (mOnLongClickListener != null) {
+                    v.setTag(data);
+                    mOnLongClickListener.onLongClick(v);
+                }
+                return false;
+                    });
         }
     }
 }

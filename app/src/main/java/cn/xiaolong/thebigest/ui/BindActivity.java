@@ -1,5 +1,8 @@
 package cn.xiaolong.thebigest.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +63,16 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             showToast("删除成功！");
             presenter.cache(smallAccountAdapter.getItems());
         });
+        smallAccountAdapter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AccountInfo accountInfo = (AccountInfo) v.getTag();
+                ClipboardManager clipboardManager = (ClipboardManager) BindActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(null, accountInfo.cookie));
+                showToast("已经复制Cookie到剪切板");
+                return false;
+            }
+        });
 
     }
 
@@ -80,7 +94,7 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
 //            accountAddDialog.setAccountInfo(null);
 //            accountAddDialog.setTitleText("添加");
 //            accountAddDialog.show();
-            startActivityForResult(new Intent(this, LoginActivity.class),REQUEST_CODE);
+            startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -89,10 +103,9 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_CODE&&resultCode==LoginActivity.RESULT_LOGIN) {
+        if (requestCode == REQUEST_CODE && resultCode == LoginActivity.RESULT_LOGIN) {
             AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
-            if(accountInfo==null)
-            {
+            if (accountInfo == null) {
                 return;
             }
             smallAccountAdapter.addItem(accountInfo);
