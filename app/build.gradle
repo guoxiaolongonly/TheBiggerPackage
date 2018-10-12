@@ -22,20 +22,20 @@ android {
         buildConfigField("Integer", "READ_TIMEOUT", READ_TIMEOUT)
         buildConfigField("String", "KEY_ACCOUNT_CACHE", KEY_ACCOUNT_CACHE)
     }
-//    signingConfigs {
-//        debug {
-//            storeFile file(KEYSTORE)
-//            storePassword STORE_PASSWORD
-//            keyAlias KEYALIAS
-//            keyPassword KEY_PASSWORD
-//        }
-//        release {
-//            storeFile file(KEYSTORE)
-//            storePassword STORE_PASSWORD
-//            keyAlias KEYALIAS
-//            keyPassword KEY_PASSWORD
-//        }
-//    }
+    signingConfigs {
+        debug {
+            storeFile file(KEYSTORE)
+            storePassword STORE_PASSWORD
+            keyAlias KEYALIAS
+            keyPassword KEY_PASSWORD
+        }
+        release {
+            storeFile file(KEYSTORE)
+            storePassword STORE_PASSWORD
+            keyAlias KEYALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
 
     compileOptions {
         targetCompatibility rootProject.ext.android.targetCompatibilityVersion
@@ -50,7 +50,7 @@ android {
             zipAlignEnabled false
             //移除无用的resource文件
             shrinkResources false
-//            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
         }
         release {
             buildConfigField("String", "HOST_URL", HOST_URL)
@@ -61,7 +61,7 @@ android {
             // 移除无用的resource文件
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
 
         }
         //修改生成的apk名字，格式为 app名_版本号_打包时间_渠道名_release.apk
@@ -81,12 +81,7 @@ android {
 
     //自动多渠道打包
     productFlavors {
-        xm {
-        }
-        anhui {
-        }
-
-        haier {
+        xl {
         }
     }
 }
@@ -122,7 +117,7 @@ def getVersionName() {
 }
 // 获取程序名称
 def getProductName() {
-    return "数据通8300"
+    return "饿了么大红包"
 }
 // 获取当前系统时间
 def releaseTime() {
@@ -151,11 +146,4 @@ dependencies {
     implementation rootProject.ext.dependencies.fastjson_converter
     // Other
     implementation rootProject.ext.dependencies.logger
-    // PinYin
-    compile 'com.belerweb:pinyin4j:2.5.1'
-    compile(rootProject.ext.dependencies.simplexml) {
-        exclude module: 'stax'
-        exclude module: 'stax-api'
-        exclude module: 'xpp3'
-    }
 }
