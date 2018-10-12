@@ -15,7 +15,19 @@
         <!--android:paddingRight="10dp"-->
         <!--android:hint="请输入手机号码"-->
         <!--/>-->
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:paddingLeft="10dp"
+        android:layout_height="wrap_content"
+        android:text="注：点击领取将会领取到大红包之前"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/hintColor"
+        />
     <EditText
         android:id="@+id/etUrl"
         android:layout_width="match_parent"

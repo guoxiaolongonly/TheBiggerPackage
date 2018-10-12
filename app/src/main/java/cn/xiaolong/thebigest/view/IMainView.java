@@ -18,7 +18,9 @@ public interface IMainView  extends ILoadingView{
 
     void getSnAndLuckyNumSuccess(String sn,String luckNumber);
 
-    void touchSuccess(PackageInfo position);
+    void touchSuccess(AccountInfo accountInfo, PackageInfo position);
 
     void onGetListSuccess(List<AccountInfo> accountInfoList);
+
+    void cacheSuccess();
 }

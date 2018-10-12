@@ -19,6 +19,7 @@ import java.net.URLDecoder;
 
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.util.AccountInfoRandomGenerator;
 import cn.xiaolong.thebigest.util.LogUtil;
 
 /**
@@ -108,8 +109,8 @@ public class LoginActivity extends BaseActivity {
 
     private void saveData() {
         //保存Cookie
-        if (TextUtils.isEmpty(cookie)||(cookie.indexOf("snsInfo[wx2a416286e96100ed]=") == -1
-                && cookie.indexOf("snsInfo[101204453]=") == -1) ||(cookie.indexOf("USERID=") == -1
+        if (TextUtils.isEmpty(cookie) || (cookie.indexOf("snsInfo[wx2a416286e96100ed]=") == -1
+                && cookie.indexOf("snsInfo[101204453]=") == -1) || (cookie.indexOf("USERID=") == -1
                 || cookie.indexOf("SID=") == -1)) {
             showToast("未获取到正确的cookie信息，请登录完QQ之后绑定手机号码");
             wvLogin.reload();
@@ -128,13 +129,20 @@ public class LoginActivity extends BaseActivity {
         if (cookie.contains("nickname\":\"")) {
             nickName = cookie.split("nickname\":\"")[1].split("\",")[0];
         }
+
         AccountInfo accountInfo = new AccountInfo(cookie, sign, openid, nickName);
+        AccountInfoRandomGenerator.generate(accountInfo);
+        String sid = "";
+        if (cookie.contains("nickname\":\"")) {
+            sid = cookie.split("SID=")[1];
+        }
+        accountInfo.sid = sid;
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
         bundle.putSerializable("accountInfo", accountInfo);
         intent.putExtras(bundle);
         clearWebViewCache();
-        setResult(RESULT_LOGIN,intent);
+        setResult(RESULT_LOGIN, intent);
         clearWebViewCache();
         finish();
     }

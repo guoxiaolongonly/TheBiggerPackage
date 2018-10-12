@@ -19,7 +19,9 @@ public class PackageInfo {
     public int lucky_status;
     //这个是领取到的红包列表
     public List<PromotionItem> promotion_items;
-    //这个是已领取的用户的数量 通过这个可以判断出接下来还需不需要点
+    //用来判断已经领取的用户数量
+    public List<String> promotion_records;
+    //母鸡
     public int ret_code;
 
     @Override
@@ -30,6 +32,7 @@ public class PackageInfo {
                 ", is_new_supervip=" + is_new_supervip +
                 ", lucky_status=" + lucky_status +
                 ", promotion_items=" + promotion_items +
+                ", promotion_records=" + promotion_records +
                 ", ret_code=" + ret_code +
                 '}';
     }

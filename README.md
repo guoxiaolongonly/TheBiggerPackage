@@ -1,6 +1,13 @@
 # TheBiggerPackage
 饿了么，美团一键领取最大红包APP
 
+## 界面如下
+
+![界面展示](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/main.png)
+![小号列表](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/setting.png)
+![添加小号](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/add.png)
+
+
 ## 需求分析
 
 1.用户用的爽，所以只需要用户提供链接和手机号就可以直接领到大红包。
@@ -50,6 +57,8 @@ PS：过程有点繁琐，不过大致就是这样了。
 所以建议用户直接通过易码接码平台：http://www.51ym.me/User/apidocs.html#login）下载相应的应用做操作。
 
 PS:有任何功能上的建议欢迎在issue中提出。
+
+
 
 
 ## 免责声明

@@ -7,12 +7,14 @@ import com.alibaba.fastjson.JSON;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.ErrorThrowable;
 import cn.xiaolong.thebigest.net.DataManager;
 import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
@@ -25,6 +27,7 @@ import cn.xiaolong.thebigest.view.IMainView;
  * @since 2018/9/20 16:57
  */
 public class MainPresenter extends BasePresenter<IMainView> {
+
     public MainPresenter(Activity activity) {
         super(activity);
     }
@@ -46,10 +49,10 @@ public class MainPresenter extends BasePresenter<IMainView> {
             if (paramMap.containsKey("sn") && paramMap.containsKey("lucky_number")) {
                 mView.getSnAndLuckyNumSuccess(paramMap.get("sn"), paramMap.get("lucky_number"));
             } else {
-                mView.getSnAndLuckyNumSuccess("", "");
+                mView.showError(new ErrorThrowable(1006, "红包地址错误"));
             }
         } else {
-            mView.getSnAndLuckyNumSuccess("", "");
+            mView.showError(new ErrorThrowable(1006, "红包地址错误"));
         }
     }
 
@@ -60,26 +63,46 @@ public class MainPresenter extends BasePresenter<IMainView> {
      */
     public void getLuckyNumber(String sn) {
         DataManager.getLuckyNumber(sn).subscribe(getSubscriberNoProgress(s -> {
-            mView.onGetLuckyNumberSuccess(s);
+            if (s.contains("lucky_number\": ")) {
+                String luckyNumber = s.split("lucky_number\": ")[1].split(",")[0];
+                mView.onGetLuckyNumberSuccess(luckyNumber);
+            }
         }));
     }
 
 
     public void touchPackage(String sn, AccountInfo accountInfo) {
-        String cookie = "SID="+accountInfo.sid;
+        if (TextUtils.isEmpty(accountInfo.sid)) {
+            if (accountInfo.cookie.contains("nickname\":\"")) {
+                accountInfo.sid = accountInfo.cookie.split("SID=")[1];
+            } else {
+                mView.showError(new Throwable("cookie保存异常，请重新绑定该账号cookie，" + accountInfo.QQ));
+                return;
+            }
+        }
+        String cookie = "SID=" + accountInfo.sid;
         DataManager.touchRedPackage(cookie, accountInfo.openId, "", sn, "", accountInfo.method, accountInfo.phoneNumber,
                 "0", accountInfo.sign, "", accountInfo.unionId, accountInfo.headerurl, accountInfo.nickname)
-                .subscribe(getSubscriber(s -> mView.touchSuccess(s)));
+                .subscribe(getSubscriber(s ->
+                        mView.touchSuccess(accountInfo,s)
+                ));
     }
 
     public void getCache() {
+
         String accountCache = (String) SPHelp.getAppParam(BuildConfig.KEY_ACCOUNT_CACHE, "");
         List<AccountInfo> accountInfoList;
         if (!TextUtils.isEmpty(accountCache)) {
             accountInfoList = JSON.parseArray(accountCache, AccountInfo.class);
+            Collections.sort(accountInfoList, (o1, o2) -> o1.allTimeCount - o2.allTimeCount);
         } else {
             accountInfoList = new ArrayList<>();
         }
         mView.onGetListSuccess(accountInfoList);
+    }
+
+    public void cache(List<AccountInfo> accountInfoList) {
+        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSONString(accountInfoList));
+        mView.cacheSuccess();
     }
 }

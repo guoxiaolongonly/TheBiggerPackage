@@ -31,6 +31,8 @@ public class PromotionItem {
     //到期
     public String validity_periods;
 
+    public PromotionItem() {
+    }
 
     public PromotionItem(String amount, String expire_date, List<String> hongbao_variety, boolean is_new_user, int item_type, String name, String phone, String source, int sum_condition, String validity_periods) {
         this.amount = amount;
@@ -43,5 +45,21 @@ public class PromotionItem {
         this.source = source;
         this.sum_condition = sum_condition;
         this.validity_periods = validity_periods;
+    }
+
+    @Override
+    public String toString() {
+        return "PromotionItem{" +
+                "amount='" + amount + '\'' +
+                ", expire_date='" + expire_date + '\'' +
+                ", hongbao_variety=" + hongbao_variety +
+                ", is_new_user=" + is_new_user +
+                ", item_type=" + item_type +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", source='" + source + '\'' +
+                ", sum_condition=" + sum_condition +
+                ", validity_periods='" + validity_periods + '\'' +
+                '}';
     }
 }

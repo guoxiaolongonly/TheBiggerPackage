@@ -29,6 +29,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private String mCurrentSn;
     private List<AccountInfo> accountInfoList;
     private int index;
+    private int luckyNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +66,20 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     private void initData() {
+
     }
 
     private void setListener() {
         tvSubmit.setOnClickListener(v -> {
+            if (luckyNumber == 0 || TextUtils.isEmpty(mCurrentSn)) {
+                showToast("请填写正确红包地址！");
+                return;
+            }
             if (accountInfoList.size() == 0) {
                 showToast("你还没有小号，请先通过配置添加小号！");
                 return;
             }
-            presenter.touchPackage(mCurrentSn, accountInfoList.get(index));
-            index = (index + 1) % accountInfoList.size();
+            touchPackage();
         });
         etUrl.addTextChangedListener(new TextWatcher() {
             @Override
@@ -94,6 +99,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         });
     }
 
+    private void touchPackage() {
+        presenter.touchPackage(mCurrentSn, accountInfoList.get(index));
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -107,14 +117,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     @Override
     public void onGetLuckyNumberSuccess(String result) {
-        if (result.contains("lucky_number\": ")) {
-            String luckyNumber = result.split("lucky_number\": ")[1].split(",")[0];
-            tvUrlParseResult.setText("红包地址正确,最大红包为:" + luckyNumber);
-        } else {
-            tvUrlParseResult.setText("红包地址有误");
-        }
-
-        LogUtil.d(result);
+        luckyNumber = Integer.parseInt(result);
+        tvUrlParseResult.setText("红包地址正确,最大红包为:" + result);
     }
 
     @Override
@@ -123,6 +127,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
             presenter.getLuckyNumber(sn);
             mCurrentSn = sn;
             SPHelp.setAppParam(BuildConfig.KEY_SN, sn);
+            if (Integer.parseInt(luckNumber) - 1 > accountInfoList.size()) {
+                showToast("当前帐号数量可能少于，所需用户数，请慎重领取。");
+                return;
+            }
             tvSubmit.setEnabled(true);
         } else {
             tvUrlParseResult.setText("红包地址错误,请复制正确的链接！");
@@ -131,12 +139,33 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     @Override
-    public void touchSuccess(PackageInfo packageInfo) {
-        LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.ret_code + "金额：" + packageInfo.promotion_items.get(0).amount);
+    public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
+        LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_items.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
+        //        showToast("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
+        index = (index + 1) % accountInfoList.size();
+        accountInfo.allTimeCount += 1;
+        presenter.cache(accountInfoList);
+        if (packageInfo == null || packageInfo.promotion_records == null) {
+            showToast("未成功获取当前领取用户数量！建议换个连接试试");
+            return;
+        }
+        if (packageInfo.promotion_records.size() >= luckyNumber) {
+            showToast("此红包已经被领取完了，请勿继续领取。");
+        } else if (packageInfo.promotion_records.size() == luckyNumber - 1) {
+            showToast("下一个为大红包，可以复制出来啦。");
+        } else {
+            touchPackage();
+        }
     }
 
     @Override
     public void onGetListSuccess(List<AccountInfo> accountInfoList) {
+        index = 0;
         this.accountInfoList = accountInfoList;
+    }
+
+    @Override
+    public void cacheSuccess() {
+
     }
 }

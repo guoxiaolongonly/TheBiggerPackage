@@ -13,31 +13,30 @@ import cn.xiaolong.thebigest.entity.AccountInfo;
  */
 public class AccountInfoRandomGenerator {
     public static String [] headerUrls = {
-            "http://img.duoziwang.com/2018/19/07111648933237.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933238.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933239.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933240.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933241.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933242.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933243.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933244.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933245.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933246.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933247.jpg",
-            "http://img.duoziwang.com/2018/19/07111648933248.jpg",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
+            "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLSDjAia9GnU9JSI10zV3QnsLsjFqbwdMQxmOEwpuSeP8S7O2bJ01C4cqolDFWdT50L8y8DiaHJbWTw/132",
     };
     public static String [] nickNames = {
-            "小蛮腰",
-            "小迷妹",
+            "儒杰杰",
+            "小龙",
             "小柯柯",
-            "郑先生",
+            "球球",
             "郑老师",
             "静哥哥",
-            "匆匆",
-            "忘事如烟",
+            "熊熊",
+            "陈婷",
             "小镇",
-            "失去",
-            "黄牛"
+            "罗老师",
+            "阿潘"
     };
     private static Random random=new Random();
     public static void generate(AccountInfo accountInfo)
