@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private List<AccountInfo> accountInfoList;
     private int index;
     private int luckyNumber;
+    private int perPackageCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 showToast("你还没有小号，请先通过配置添加小号！");
                 return;
             }
+            perPackageCount = 0;
             touchPackage();
         });
         etUrl.addTextChangedListener(new TextWatcher() {
@@ -140,9 +143,19 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     @Override
     public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
-        LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_items.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
-        //        showToast("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
+        perPackageCount++;
+        if (perPackageCount >= accountInfoList.size()) {
+            showToast("账号已经不够用啦！！");
+            return;
+        }
         index = (index + 1) % accountInfoList.size();
+        //当前账号没有次数
+        if (packageInfo.promotion_items.size() == 0) {
+            touchPackage();
+            return;
+        }
+        LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
+        //        showToast("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
         accountInfo.allTimeCount += 1;
         presenter.cache(accountInfoList);
         if (packageInfo == null || packageInfo.promotion_records == null) {

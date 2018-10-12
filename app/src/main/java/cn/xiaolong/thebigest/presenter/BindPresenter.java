@@ -1,6 +1,7 @@
 package cn.xiaolong.thebigest.presenter;
 
 import android.app.Activity;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -11,6 +12,7 @@ import java.util.List;
 import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.net.DataManager;
+import cn.xiaolong.thebigest.util.FileUtil;
 import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IBindView;
 
@@ -52,7 +54,7 @@ public class BindPresenter extends BasePresenter<IBindView> {
     }
 
     public void getCache() {
-        String accountCache = (String) SPHelp.getAppParam(BuildConfig.KEY_ACCOUNT_CACHE, "");
+        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath()+"/cache/","hbCache.txt");
         if (!TextUtils.isEmpty(accountCache)) {
             accountInfos = JSON.parseArray(accountCache, AccountInfo.class);
         } else {
@@ -62,7 +64,8 @@ public class BindPresenter extends BasePresenter<IBindView> {
     }
 
     public void cache(List<AccountInfo> accountInfoList) {
-        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSONString(accountInfoList));
+        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList),Environment.getExternalStorageDirectory()+"/cache/","hbCache.txt");
+//        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSONString(accountInfoList));
         mView.cacheSuccess();
     }
 
