@@ -21,6 +21,8 @@ import cn.xiaolong.thebigest.util.FileUtil;
 import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
 
+import static cn.xiaolong.thebigest.util.Constant.ERROR_PACKAGE;
+
 /**
  * <描述功能>
  *
@@ -51,10 +53,10 @@ public class MainPresenter extends BasePresenter<IMainView> {
             if (paramMap.containsKey("sn") && paramMap.containsKey("lucky_number")) {
                 mView.getSnAndLuckyNumSuccess(paramMap.get("sn"), paramMap.get("lucky_number"));
             } else {
-                mView.showError(new ErrorThrowable(1006, "红包地址错误"));
+                mView.showError(new ErrorThrowable(ERROR_PACKAGE, "红包地址错误"));
             }
         } else {
-            mView.showError(new ErrorThrowable(1006, "红包地址错误"));
+            mView.showError(new ErrorThrowable(ERROR_PACKAGE, "红包地址错误"));
         }
     }
 

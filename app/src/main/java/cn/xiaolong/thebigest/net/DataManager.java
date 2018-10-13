@@ -5,11 +5,14 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 
+import java.nio.charset.Charset;
+
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorResponse;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
 import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
+import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.LogUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
@@ -146,12 +149,25 @@ public class DataManager {
     private static <T> Function<Throwable, Observable<? extends T>> errorResumeFunc() {
         return throwable -> {
             throwable.printStackTrace();
-            ResponseBody body = ((HttpException) throwable).response().errorBody();
+            ResponseBody errorBody = ((HttpException) throwable).response().errorBody();
             //如果不是网络错误可能会是本地错误
             ErrorResponse errorResponse = new ErrorResponse("未知错误，可联系作者反馈。", ((HttpException) throwable).message(), 0x66);
-            if (!TextUtils.isEmpty(body.string())) {
-                errorResponse = (ErrorResponse) JSON.parse(body.string());
-                errorResponse.errorCode = 0x110;
+            String reuslt = errorBody.source().readString(Charset.forName("UTF-8"));
+            if (errorBody != null && errorBody.contentLength() > 0) {
+                errorResponse = JSON.parseObject(reuslt, ErrorResponse.class);
+                switch (errorResponse.name) {
+                    case "PHONE_IS_EMPTY":
+                        //帐号失效
+                        errorResponse.errorCode = Constant.ERROR_INVALID;
+                        break;
+                    case "TOO_BUSY":
+                        //操作频繁
+                        errorResponse.errorCode = Constant.ERROR_BUSY;
+                        break;
+                    default:
+                        errorResponse.errorCode = Constant.ERROR_UN_KNOWN;
+                }
+
             }
             return Observable.error(new ErrorThrowable(errorResponse.errorCode, errorResponse.message));
         };

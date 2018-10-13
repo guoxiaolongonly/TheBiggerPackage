@@ -16,8 +16,10 @@ import java.util.List;
 import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.ErrorThrowable;
 import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.presenter.MainPresenter;
+import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.LogUtil;
 import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
@@ -32,6 +34,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private int index;
     private int luckyNumber;
     private int perPackageCount;
+    private TextView tvHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private void initView() {
 //        tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
         etUrl = findViewById(R.id.etUrl);
+        tvHint = findViewById(R.id.tvHint);
         tvUrlParseResult = findViewById(R.id.tvUrlParseResult);
         tvSubmit = findViewById(R.id.tvSubmit);
     }
@@ -144,14 +148,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     @Override
     public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
         perPackageCount++;
-        if (perPackageCount >= accountInfoList.size()) {
-            showToast("账号已经不够用啦！！");
+        //如果这个红包的点击次数已经循环了一个列表
+        if (perPackageCount > accountInfoList.size()) {
+            showToast("小不够用啦！可以去配置加一些！当前红包：" + packageInfo.promotion_records.size() + "大红包：" + luckyNumber);
             return;
         }
-        index = (index + 1) % accountInfoList.size();
         //当前账号没有次数
         if (packageInfo.promotion_items.size() == 0) {
-            touchPackage();
+            touchNext();
             return;
         }
         LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
@@ -167,7 +171,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         } else if (packageInfo.promotion_records.size() == luckyNumber - 1) {
             showToast("下一个为大红包，可以复制出来啦。");
         } else {
-            touchPackage();
+            touchNext();
         }
     }
 
@@ -180,5 +184,30 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     @Override
     public void cacheSuccess() {
 
+    }
+
+    @Override
+    public void showError(Throwable error) {
+        if (error instanceof ErrorThrowable) {
+            ErrorThrowable errorThrowable = (ErrorThrowable) error;
+            switch (errorThrowable.code) {
+                case Constant.ERROR_INVALID:
+                    tvHint.append("QQ：" + accountInfoList.get(index).QQ + "验证失败，请重新添加\n");
+                    perPackageCount++;
+                    touchNext();
+                    break;
+                case Constant.ERROR_BUSY:
+                    touchPackage();
+                    break;
+                default:
+                    showToast(error.getMessage());
+                    break;
+            }
+        }
+    }
+
+    public void touchNext() {
+        index = (index + 1) % accountInfoList.size();
+        touchPackage();
     }
 }
