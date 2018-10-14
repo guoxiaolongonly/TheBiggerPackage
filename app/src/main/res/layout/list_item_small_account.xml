@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:singleLine="true"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="12345464564"

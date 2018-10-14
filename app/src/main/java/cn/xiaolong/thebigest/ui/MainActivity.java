@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         {
             for(PromotionItem promotionItem :packageInfo.promotion_items)
             {
-                if(promotionItem.is_new_user==true)
+                if(promotionItem.is_new_user)
                 {
                     tvHint.append("手机号：" + promotionItem.phone + "是新用户，可以搞首单满减\n");
                     break;
