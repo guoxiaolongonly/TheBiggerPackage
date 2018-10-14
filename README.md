@@ -19,7 +19,7 @@
 
 ## 界面如下
 
-![界面展示](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/main.png)
+![界面展示](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/main.jpg)
 ![小号列表](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/setting.png)
 ![添加小号](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/add.png)
 
