@@ -7,7 +7,7 @@ ext {
             supportLibraryVersion = '27.0.1',
             support_v4 = '27.0.1',
             constraintVersion = "1.0.2",
-            multidex = "1.0.1",
+            multidex = "1.0.2",
     ]
 
     android = [

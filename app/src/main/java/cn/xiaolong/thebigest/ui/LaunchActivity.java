@@ -35,6 +35,7 @@ public class LaunchActivity extends BaseActivity {
 
     private void initView() {
         startActivity(new Intent(this,MainActivity.class));
+        finish();
     }
 
 

@@ -31,6 +31,11 @@ public class AccountInfo implements Serializable {
     public String phoneNumber = "";
 
 
+    public void countIncrease() {
+        perDaycount = perDaycount + 1;
+        allTimeCount = allTimeCount + 1;
+    }
+
     public AccountInfo() {
     }
 

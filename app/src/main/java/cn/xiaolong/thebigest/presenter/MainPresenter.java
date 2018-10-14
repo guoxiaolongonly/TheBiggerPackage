@@ -88,13 +88,13 @@ public class MainPresenter extends BasePresenter<IMainView> {
         DataManager.touchRedPackage(cookie, accountInfo.openId, "", sn, "", accountInfo.method, accountInfo.phoneNumber,
                 "0", accountInfo.sign, "", accountInfo.unionId, accountInfo.headerurl, accountInfo.nickname)
                 .subscribe(getSubscriber(s ->
-                        mView.touchSuccess(accountInfo,s)
+                        mView.touchSuccess(accountInfo, s)
                 ));
     }
 
     public void getCache() {
 
-        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath()+"/cache/","hbCache.txt");
+        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath() + "/cache/", "hbCache.txt");
         List<AccountInfo> accountInfoList;
         if (!TextUtils.isEmpty(accountCache)) {
             accountInfoList = JSON.parseArray(accountCache, AccountInfo.class);
@@ -105,8 +105,16 @@ public class MainPresenter extends BasePresenter<IMainView> {
         mView.onGetListSuccess(accountInfoList);
     }
 
+    public void resetPerDayCount(List<AccountInfo> accountInfos) {
+        for (AccountInfo accountInfo : accountInfos) {
+            accountInfo.perDaycount = 0;
+        }
+        cache(accountInfos);
+    }
+
+
     public void cache(List<AccountInfo> accountInfoList) {
-        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList),Environment.getExternalStorageDirectory().getPath()+"/cache/","hbCache.txt");
+        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), Environment.getExternalStorageDirectory().getPath() + "/cache/", "hbCache.txt");
         mView.cacheSuccess();
     }
 }

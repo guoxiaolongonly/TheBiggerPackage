@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
 import cn.xiaolong.thebigest.entity.PackageInfo;
+import cn.xiaolong.thebigest.entity.PromotionItem;
 import cn.xiaolong.thebigest.presenter.MainPresenter;
 import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.LogUtil;
@@ -35,6 +37,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private int luckyNumber;
     private int perPackageCount;
     private TextView tvHint;
+    private TextView tvReset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     private void initView() {
 //        tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
+        tvReset = findViewById(R.id.tvReset);
         etUrl = findViewById(R.id.etUrl);
         tvHint = findViewById(R.id.tvHint);
         tvUrlParseResult = findViewById(R.id.tvUrlParseResult);
@@ -104,6 +108,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 presenter.getCheckAndParseLuckyPackage(s.toString());
             }
         });
+        tvReset.setOnClickListener(v -> {
+            presenter.resetPerDayCount(accountInfoList);
+        });
     }
 
     private void touchPackage() {
@@ -147,6 +154,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     @Override
     public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
+        newUserCheck(packageInfo);
         perPackageCount++;
         //如果这个红包的点击次数已经循环了一个列表
         if (perPackageCount > accountInfoList.size()) {
@@ -160,7 +168,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         }
         LogUtil.d("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
         //        showToast("是否大红包？" + packageInfo.is_lucky + "__当前红包:" + packageInfo.promotion_records.size() + "金额：" + packageInfo.promotion_items.get(0).amount);
-        accountInfo.allTimeCount += 1;
+        accountInfo.countIncrease();
         presenter.cache(accountInfoList);
         if (packageInfo == null || packageInfo.promotion_records == null) {
             showToast("未成功获取当前领取用户数量！建议换个连接试试");
@@ -173,6 +181,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         } else {
             touchNext();
         }
+    }
+
+    private void newUserCheck(PackageInfo packageInfo) {
+        if(packageInfo.promotion_items!=null&&packageInfo.promotion_items.size()>1)
+        {
+            for(PromotionItem promotionItem :packageInfo.promotion_items)
+            {
+                if(promotionItem.is_new_user==true)
+                {
+                    tvHint.append("手机号：" + promotionItem.phone + "是新用户，可以搞首单满减\n");
+                    break;
+                }
+            }
+        }
+
     }
 
     @Override

@@ -5,67 +5,95 @@
     android:orientation="vertical">
 
     <!--<EditText-->
-        <!--android:id="@+id/tvPhoneNumber"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:inputType="phone"-->
-        <!--android:background="@color/white"-->
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:paddingLeft="10dp"-->
-        <!--android:paddingRight="10dp"-->
-        <!--android:hint="请输入手机号码"-->
-        <!--/>-->
-    <TextView
+    <!--android:id="@+id/tvPhoneNumber"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="40dp"-->
+    <!--android:inputType="phone"-->
+    <!--android:background="@color/white"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:paddingLeft="10dp"-->
+    <!--android:paddingRight="10dp"-->
+    <!--android:hint="请输入手机号码"-->
+    <!--/>-->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:paddingLeft="10dp"
         android:layout_height="wrap_content"
-        android:text="注：点击领取将会领取到大红包之前"
-        />
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:text="注：点击领取将会领取到大红包之前" />
+
+    <TextView
+        android:id="@+id/tvReset"
+        android:layout_width="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/white"
+        android:text="重置" />
+    </LinearLayout>
+
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/hintColor"
-        />
+        android:background="@color/hintColor" />
+
     <EditText
         android:id="@+id/etUrl"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:background="@color/white"
         android:layout_marginTop="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:background="@color/white"
         android:gravity="start"
-        android:hint="请在这里输入饿了么红包地址" />
+        android:hint="请在这里输入饿了么红包地址"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
 
     <TextView
         android:id="@+id/tvUrlParseResult"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:text="链接测试"
         android:background="@color/colorPrimary"
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
-        android:textColor="@color/hintColor"
-        />
+        android:text="链接测试"
+        android:textColor="@color/hintColor" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:orientation="horizontal"
-        >
-    <TextView
-        android:id="@+id/tvSubmit"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"
-        android:text="领取" />
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSubmit"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="领取"
+            android:textColor="@color/white" />
     </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" />
+    </ScrollView>
 </LinearLayout>
