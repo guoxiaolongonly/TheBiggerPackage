@@ -46,7 +46,7 @@
         android:id="@+id/tvQQ"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
         android:layout_weight="1"
         android:background="?selectableItemBackground"
         android:paddingLeft="10dp"

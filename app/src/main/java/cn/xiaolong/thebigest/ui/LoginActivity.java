@@ -155,7 +155,6 @@ public class LoginActivity extends BaseActivity {
         Bundle bundle = new Bundle();
         bundle.putSerializable("accountInfo", accountInfo);
         intent.putExtras(bundle);
-        clearWebViewCache();
         setResult(RESULT_ADD, intent);
         clearWebViewCache();
         finish();

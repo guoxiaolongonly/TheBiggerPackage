@@ -30,7 +30,7 @@ import cn.xiaolong.thebigest.view.IBindView;
  */
 
 public class BindActivity extends BaseActivity<BindPresenter> implements IBindView {
-    public static final int REQUEST_ADD = -1;
+    public static final int REQUEST_ADD = 0x111;
     private RecyclerView rvContent;
     private SmallAccountAdapter smallAccountAdapter;
 

@@ -37,6 +37,18 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/white"
         android:text="重置" />
+
+        <TextView
+            android:id="@+id/tvChoose"
+            android:layout_width="80dp"
+            android:layout_marginLeft="10dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:text="选择大号" />
+
     </LinearLayout>
 
 
