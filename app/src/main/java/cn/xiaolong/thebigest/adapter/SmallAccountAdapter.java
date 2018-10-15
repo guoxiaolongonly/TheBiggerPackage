@@ -6,6 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +24,12 @@ import cn.xiaolong.thebigest.entity.AccountInfo;
  * @version v1.0
  * @since 2018/10/8 11:23
  */
-public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapter.ViewHolder> {
+public class SmallAccountAdapter extends RecyclerSwipeAdapter<SmallAccountAdapter.ViewHolder> {
     private List<AccountInfo> accountInfos;
     private Context mContext;
     private View.OnClickListener mOnDeleteClickListener;
-    private View.OnLongClickListener mOnLongClickListener;
+    private View.OnClickListener mOnCopyClickListener;
+    private View.OnClickListener mOnEditClickListener;
 
     public SmallAccountAdapter(Context context, List<AccountInfo> accountInfos) {
         this.mContext = context;
@@ -54,6 +59,12 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         notifyDataSetChanged();
     }
 
+    public void replaceItem(int position, AccountInfo newAccountInfo) {
+        accountInfos.remove(position);
+        accountInfos.add(position, newAccountInfo);
+        notifyDataSetChanged();
+    }
+
     public void remove(AccountInfo accountInfo) {
         int position = accountInfos.indexOf(accountInfo);
         accountInfos.remove(accountInfo);
@@ -72,8 +83,12 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         mOnDeleteClickListener = onDeleteClickListener;
     }
 
-    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
-        this.mOnLongClickListener = onLongClickListener;
+    public void setOnCopyClickListener(View.OnClickListener onCopyClickListener) {
+        this.mOnCopyClickListener = onCopyClickListener;
+    }
+
+    public void setOnEditClickListener(View.OnClickListener onEditClickListener) {
+        this.mOnEditClickListener = onEditClickListener;
     }
 
     @Override
@@ -83,7 +98,7 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setData(accountInfos.get(position));
+        holder.setData(accountInfos.get(position), position);
     }
 
     @Override
@@ -91,30 +106,63 @@ public class SmallAccountAdapter extends RecyclerView.Adapter<SmallAccountAdapte
         return accountInfos.size();
     }
 
+    @Override
+    public int getSwipeLayoutResourceId(int position) {
+        return R.id.swipeLayout;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvQQ;
         private TextView tvDelete;
+        private TextView tvCopy;
+        private TextView tvEdit;
+        private SwipeLayout swipeLayout;
+
         public ViewHolder(View itemView) {
             super(itemView);
             tvQQ = itemView.findViewById(R.id.tvQQ);
             tvDelete = itemView.findViewById(R.id.tvDelete);
+            tvEdit = itemView.findViewById(R.id.tvEdit);
+            tvCopy = itemView.findViewById(R.id.tvCopy);
+            swipeLayout = itemView.findViewById(R.id.swipeLayout);
         }
 
-        public void setData(AccountInfo data) {
-            tvQQ.setText("QQ昵称:"+data.QQ);
+        public void setData(AccountInfo data, int position) {
+            tvQQ.setText("QQ昵称:" + data.QQ);
+            if (!data.isValid) {
+                tvQQ.setTextColor(mContext.getResources().getColor(R.color.red));
+            }
+            swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+            mItemManger.bindView(itemView, position);
+            tvQQ.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!data.isValid)
+                    {
+                        Toast.makeText(mContext,"该账号Cookie过期，请进行编辑或者删除，避免影响正常使用",Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
             tvDelete.setOnClickListener(v -> {
                 if (mOnDeleteClickListener != null) {
                     v.setTag(data);
                     mOnDeleteClickListener.onClick(v);
                 }
             });
-            itemView.setOnLongClickListener(v -> {
-                if (mOnLongClickListener != null) {
+
+            tvCopy.setOnClickListener(v -> {
+                if (mOnCopyClickListener != null) {
                     v.setTag(data);
-                    mOnLongClickListener.onLongClick(v);
+                    mOnCopyClickListener.onClick(v);
                 }
-                return false;
-                    });
+            });
+            tvEdit.setOnClickListener(v -> {
+                if (mOnEditClickListener != null) {
+                    v.setTag(position);
+                    mOnEditClickListener.onClick(v);
+                }
+            });
+
         }
     }
 }

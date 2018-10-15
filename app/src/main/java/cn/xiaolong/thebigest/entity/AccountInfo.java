@@ -29,6 +29,7 @@ public class AccountInfo implements Serializable {
     public String nickname = "";
     public String unionId = "fuck";
     public String phoneNumber = "";
+    public String password = "";
 
 
     public void countIncrease() {
@@ -64,6 +65,7 @@ public class AccountInfo implements Serializable {
                 ", nickname='" + nickname + '\'' +
                 ", unionId='" + unionId + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 }

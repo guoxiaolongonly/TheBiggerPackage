@@ -146,4 +146,8 @@ dependencies {
     implementation rootProject.ext.dependencies.fastjson_converter
     // Other
     implementation rootProject.ext.dependencies.logger
+    // swipe
+    implementation rootProject.ext.dependencies.swipe
+
+
 }

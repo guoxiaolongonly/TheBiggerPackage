@@ -7,10 +7,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -184,12 +182,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     private void newUserCheck(PackageInfo packageInfo) {
-        if(packageInfo.promotion_items!=null&&packageInfo.promotion_items.size()>1)
-        {
-            for(PromotionItem promotionItem :packageInfo.promotion_items)
-            {
-                if(promotionItem.is_new_user)
-                {
+        if (packageInfo.promotion_items != null && packageInfo.promotion_items.size() > 1) {
+            for (PromotionItem promotionItem : packageInfo.promotion_items) {
+                if (promotionItem.is_new_user) {
                     tvHint.append("手机号：" + promotionItem.phone + "是新用户，可以搞首单满减\n");
                     break;
                 }
@@ -217,6 +212,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 case Constant.ERROR_INVALID:
                     tvHint.append("QQ：" + accountInfoList.get(index).QQ + "验证失败，请重新添加\n");
                     perPackageCount++;
+                    accountInfoList.get(index).isValid = false;
+                    presenter.cache(accountInfoList);
                     touchNext();
                     break;
                 case Constant.ERROR_BUSY:

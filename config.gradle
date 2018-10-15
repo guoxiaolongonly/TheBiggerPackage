@@ -54,5 +54,7 @@ ext {
             "event"                   : "org.greenrobot:eventbus:3.0.0",
             // Other
             "logger"                  : "com.orhanobut:logger:1.15",
+
+            "swipe"                   : "com.daimajia.swipelayout:library:1.2.0@aar",
     ]
 }

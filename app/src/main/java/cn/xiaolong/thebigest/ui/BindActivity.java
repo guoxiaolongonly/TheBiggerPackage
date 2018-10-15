@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ import cn.xiaolong.thebigest.view.IBindView;
  */
 
 public class BindActivity extends BaseActivity<BindPresenter> implements IBindView {
-    public static final int REQUEST_CODE = 0X6220;
+    public static final int REQUEST_ADD = -1;
     private RecyclerView rvContent;
     private SmallAccountAdapter smallAccountAdapter;
 
@@ -63,17 +62,19 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             showToast("删除成功！");
             presenter.cache(smallAccountAdapter.getItems());
         });
-        smallAccountAdapter.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                AccountInfo accountInfo = (AccountInfo) v.getTag();
-                ClipboardManager clipboardManager = (ClipboardManager) BindActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboardManager.setPrimaryClip(ClipData.newPlainText(null, accountInfo.cookie));
-                showToast("已经复制Cookie到剪切板");
-                return false;
-            }
+        smallAccountAdapter.setOnCopyClickListener(v -> {
+            AccountInfo accountInfo = (AccountInfo) v.getTag();
+            ClipboardManager clipboardManager = (ClipboardManager) BindActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, accountInfo.cookie));
+            showToast("已经复制Cookie到剪切板");
         });
-
+        smallAccountAdapter.setOnEditClickListener(v -> {
+            int position = (int) v.getTag();
+            AccountInfo accountInfo = smallAccountAdapter.getItems().get(position);
+            Intent intent = new Intent(BindActivity.this, LoginActivity.class);
+            intent.putExtras(LoginActivity.buildBundle(accountInfo.cookie));
+            startActivityForResult(intent, position);
+        });
     }
 
     private void initData() {
@@ -94,7 +95,7 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
 //            accountAddDialog.setAccountInfo(null);
 //            accountAddDialog.setTitleText("添加");
 //            accountAddDialog.show();
-            startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE);
+            startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_ADD);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -103,12 +104,24 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == LoginActivity.RESULT_LOGIN) {
+        if(resultCode==0)
+        {
+            return;
+        }
+        if (requestCode == REQUEST_ADD && resultCode == LoginActivity.RESULT_ADD) {
             AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
             if (accountInfo == null) {
                 return;
             }
             smallAccountAdapter.addItem(accountInfo);
+            presenter.cache(smallAccountAdapter.getItems());
+        }else
+        {
+            AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
+            if (accountInfo == null) {
+                return;
+            }
+            smallAccountAdapter.replaceItem(requestCode,accountInfo);
             presenter.cache(smallAccountAdapter.getItems());
         }
 

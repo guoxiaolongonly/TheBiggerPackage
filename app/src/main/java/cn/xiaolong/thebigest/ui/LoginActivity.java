@@ -31,9 +31,10 @@ import cn.xiaolong.thebigest.util.LogUtil;
  */
 public class LoginActivity extends BaseActivity {
 
-    public static final int RESULT_LOGIN = 0X4564;
+    public static final int RESULT_ADD = 0X4564;
+    private static final String url = "https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=9&track_id=&platform=4&sn=2a0423f08f39e0ab&theme_id=2905&device_id=&refer_user_id=20475540";
     private WebView wvLogin;
-    private String cookie = "";
+    private String cookieCache = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,8 +43,21 @@ public class LoginActivity extends BaseActivity {
         wvLogin = findViewById(R.id.wvLogin);
         setTitle("cookie获取");
         initWebSetting();
-        wvLogin.loadUrl("https://h5.ele.me/hongbao/#hardware_id=&is_lucky_group=True&lucky_number=9&track_id=&platform=4&sn=2a0423f08f39e0ab&theme_id=2905&device_id=&refer_user_id=20475540");
+        setCookie();
+        wvLogin.loadUrl(url);
+    }
 
+    private void setCookie() {
+        String cookieStr = getIntent().getStringExtra("Cookie");
+        CookieSyncManager.createInstance(this);
+        if (!TextUtils.isEmpty(cookieStr)) {
+            CookieManager.getInstance().removeAllCookie();
+            String[] cookies = cookieStr.split(";");
+            for (String cookie : cookies) {
+                CookieManager.getInstance().setCookie(url, cookie);
+            }
+            CookieSyncManager.getInstance().sync();
+        }
     }
 
 
@@ -76,8 +90,8 @@ public class LoginActivity extends BaseActivity {
 //                        "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
 
                 CookieManager cookieManager = CookieManager.getInstance();
-                cookie = cookieManager.getCookie(url);
-                Log.i("finish", "onPageFinished: " + cookie);
+                cookieCache = cookieManager.getCookie(url);
+                Log.i("finish", "onPageFinished: " + cookieCache);
                 super.onPageFinished(view, url);
             }
         });
@@ -109,32 +123,32 @@ public class LoginActivity extends BaseActivity {
 
     private void saveData() {
         //保存Cookie
-        if (TextUtils.isEmpty(cookie) || (cookie.indexOf("snsInfo[wx2a416286e96100ed]=") == -1
-                && cookie.indexOf("snsInfo[101204453]=") == -1) || (cookie.indexOf("USERID=") == -1
-                || cookie.indexOf("SID=") == -1)) {
+        if (TextUtils.isEmpty(cookieCache) || (cookieCache.indexOf("snsInfo[wx2a416286e96100ed]=") == -1
+                && cookieCache.indexOf("snsInfo[101204453]=") == -1) || (cookieCache.indexOf("USERID=") == -1
+                || cookieCache.indexOf("SID=") == -1)) {
             showToast("未获取到正确的cookie信息，请登录完QQ之后绑定手机号码");
             wvLogin.reload();
             return;
         }
-        cookie = URLDecoder.decode(cookie);
+        cookieCache = URLDecoder.decode(cookieCache);
         String openid = "";
-        if (cookie.contains("openid\":\"")) {
-            openid = cookie.split("openid\":\"")[1].split("\",")[0];
+        if (cookieCache.contains("openid\":\"")) {
+            openid = cookieCache.split("openid\":\"")[1].split("\",")[0];
         }
         String sign = "";
-        if (cookie.contains("eleme_key\":\"")) {
-            sign = cookie.split("eleme_key\":\"")[1].split("\",")[0];
+        if (cookieCache.contains("eleme_key\":\"")) {
+            sign = cookieCache.split("eleme_key\":\"")[1].split("\",")[0];
         }
         String nickName = "";
-        if (cookie.contains("nickname\":\"")) {
-            nickName = cookie.split("nickname\":\"")[1].split("\",")[0];
+        if (cookieCache.contains("nickname\":\"")) {
+            nickName = cookieCache.split("nickname\":\"")[1].split("\",")[0];
         }
 
-        AccountInfo accountInfo = new AccountInfo(cookie, sign, openid, nickName);
+        AccountInfo accountInfo = new AccountInfo(cookieCache, sign, openid, nickName);
         AccountInfoRandomGenerator.generate(accountInfo);
         String sid = "";
-        if (cookie.contains("nickname\":\"")) {
-            sid = cookie.split("SID=")[1];
+        if (cookieCache.contains("nickname\":\"")) {
+            sid = cookieCache.split("SID=")[1];
         }
         accountInfo.sid = sid;
         Intent intent = new Intent();
@@ -142,15 +156,21 @@ public class LoginActivity extends BaseActivity {
         bundle.putSerializable("accountInfo", accountInfo);
         intent.putExtras(bundle);
         clearWebViewCache();
-        setResult(RESULT_LOGIN, intent);
+        setResult(RESULT_ADD, intent);
         clearWebViewCache();
         finish();
     }
 
 
     public void clearWebViewCache() {
-        CookieSyncManager.createInstance(this);
         CookieManager.getInstance().removeAllCookie();
+        CookieSyncManager.getInstance().sync();
+    }
+
+    public static Bundle buildBundle(String cookie) {
+        Bundle bundle = new Bundle();
+        bundle.putString("Cookie", cookie);
+        return bundle;
     }
 
 //    /**
