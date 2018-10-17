@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -30,6 +29,7 @@ public class SmallAccountAdapter extends RecyclerSwipeAdapter<SmallAccountAdapte
     private View.OnClickListener mOnDeleteClickListener;
     private View.OnClickListener mOnCopyClickListener;
     private View.OnClickListener mOnEditClickListener;
+    private View.OnClickListener mOnItemClickListener;
 
     public SmallAccountAdapter(Context context, List<AccountInfo> accountInfos) {
         this.mContext = context;
@@ -91,6 +91,10 @@ public class SmallAccountAdapter extends RecyclerSwipeAdapter<SmallAccountAdapte
         this.mOnEditClickListener = onEditClickListener;
     }
 
+    public void setOnItemClickListener(View.OnClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.list_item_small_account, parent, false));
@@ -134,13 +138,11 @@ public class SmallAccountAdapter extends RecyclerSwipeAdapter<SmallAccountAdapte
             }
             swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
             mItemManger.bindView(itemView, position);
-            tvQQ.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!data.isValid)
-                    {
-                        Toast.makeText(mContext,"该账号Cookie过期，请进行编辑或者删除，避免影响正常使用",Toast.LENGTH_LONG).show();
-                    }
+            itemView.setOnClickListener(v -> {
+                if(mOnItemClickListener!=null)
+                {
+                    v.setTag(data);
+                    mOnItemClickListener.onClick(v);
                 }
             });
             tvDelete.setOnClickListener(v -> {

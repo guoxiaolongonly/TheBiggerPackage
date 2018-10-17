@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.BindActivity"/>
+        <activity android:name=".ui.BigBindActivity"/>
         <activity android:name=".ui.LoginActivity"/>
         <activity android:name=".ui.MainActivity"/>
     </application>

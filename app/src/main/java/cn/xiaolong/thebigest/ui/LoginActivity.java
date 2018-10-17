@@ -50,6 +50,7 @@ public class LoginActivity extends BaseActivity {
     private void setCookie() {
         String cookieStr = getIntent().getStringExtra("Cookie");
         CookieSyncManager.createInstance(this);
+        CookieManager.getInstance().setAcceptCookie(true);
         if (!TextUtils.isEmpty(cookieStr)) {
             CookieManager.getInstance().removeAllCookie();
             String[] cookies = cookieStr.split(";");

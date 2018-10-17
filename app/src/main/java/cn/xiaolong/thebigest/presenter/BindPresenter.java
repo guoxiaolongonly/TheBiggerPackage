@@ -9,11 +9,10 @@ import com.alibaba.fastjson.JSON;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.net.DataManager;
+import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.FileUtil;
-import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IBindView;
 
 /**
@@ -25,12 +24,24 @@ import cn.xiaolong.thebigest.view.IBindView;
  */
 public class BindPresenter extends BasePresenter<IBindView> {
 
-
     private String validateToken;
     private List<AccountInfo> accountInfos;
 
-    public BindPresenter(Activity activity) {
+    private String cacheFileName;
+    private String exportFileName;
+
+    public BindPresenter(Activity activity, int accountType) {
         super(activity);
+        switch (accountType) {
+            case Constant.ACOOUT_TYPE_BIG:
+                cacheFileName = Constant.CACHE_FILE_BIG;
+                exportFileName = Constant.EXPORT_FILE_BIG;
+                break;
+            case Constant.ACOOUT_TYPE_SMALL:
+                cacheFileName = Constant.CACHE_FILE_SMALL;
+                exportFileName = Constant.EXPORT_FILE_SMALL;
+                break;
+        }
     }
 
     //为了保证流统一销毁和异常处理，请调用getSubscribe处理返回数据
@@ -53,8 +64,15 @@ public class BindPresenter extends BasePresenter<IBindView> {
         }));
     }
 
+
+    public void export(List<AccountInfo> accountInfoList) {
+        String filePath = Environment.getExternalStorageDirectory() + "/export/";
+        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), filePath, exportFileName);
+        mView.onExportSuccess(filePath + exportFileName);
+    }
+
     public void getCache() {
-        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath()+"/cache/","hbCache.txt");
+        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath() + "/cache/", cacheFileName);
         if (!TextUtils.isEmpty(accountCache)) {
             accountInfos = JSON.parseArray(accountCache, AccountInfo.class);
         } else {
@@ -64,7 +82,7 @@ public class BindPresenter extends BasePresenter<IBindView> {
     }
 
     public void cache(List<AccountInfo> accountInfoList) {
-        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList),Environment.getExternalStorageDirectory()+"/cache/","hbCache.txt");
+        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), Environment.getExternalStorageDirectory() + "/cache/", cacheFileName);
 //        SPHelp.setAppParam(BuildConfig.KEY_ACCOUNT_CACHE, JSON.toJSONString(accountInfoList));
         mView.cacheSuccess();
     }

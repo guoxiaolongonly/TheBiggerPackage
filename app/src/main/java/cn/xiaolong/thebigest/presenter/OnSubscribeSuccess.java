@@ -7,4 +7,5 @@ package cn.xiaolong.thebigest.presenter;
  */
 public interface OnSubscribeSuccess<T> {
     void onSuccess(T t);
+
 }

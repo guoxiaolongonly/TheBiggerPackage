@@ -13,13 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
+import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.net.DataManager;
+import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.FileUtil;
-import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static cn.xiaolong.thebigest.util.Constant.ERROR_PACKAGE;
 
@@ -92,9 +94,44 @@ public class MainPresenter extends BasePresenter<IMainView> {
                 ));
     }
 
+    public void bigTouch(String sn, AccountInfo accountInfo) {
+        if (TextUtils.isEmpty(accountInfo.sid)) {
+            if (accountInfo.cookie.contains("nickname\":\"")) {
+                accountInfo.sid = accountInfo.cookie.split("SID=")[1];
+            } else {
+                mView.showError(new Throwable("大号cookie保存异常，请重新绑定该账号cookie，" + accountInfo.QQ));
+                return;
+            }
+        }
+        String cookie = "SID=" + accountInfo.sid;
+        DataManager.touchRedPackage(cookie, accountInfo.openId, "", sn, "", accountInfo.method, accountInfo.phoneNumber,
+                "0", accountInfo.sign, "", accountInfo.unionId, accountInfo.headerurl, accountInfo.nickname)
+                .subscribe(new Observer<PackageInfo>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addSubscribe(d);
+                    }
+
+                    @Override
+                    public void onNext(PackageInfo packageInfo) {
+                        mView.bigTouchSuccess(accountInfo,packageInfo);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mView.bigTouchFail(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     public void getCache() {
 
-        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath() + "/cache/", "hbCache.txt");
+        String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath() + "/cache/", Constant.CACHE_FILE_SMALL);
         List<AccountInfo> accountInfoList;
         if (!TextUtils.isEmpty(accountCache)) {
             accountInfoList = JSON.parseArray(accountCache, AccountInfo.class);
@@ -114,7 +151,7 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
 
     public void cache(List<AccountInfo> accountInfoList) {
-        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), Environment.getExternalStorageDirectory().getPath() + "/cache/", "hbCache.txt");
+        FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), Environment.getExternalStorageDirectory().getPath() + "/cache/", Constant.CACHE_FILE_SMALL);
         mView.cacheSuccess();
     }
 }

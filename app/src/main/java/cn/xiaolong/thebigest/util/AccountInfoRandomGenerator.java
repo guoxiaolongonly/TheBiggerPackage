@@ -5,7 +5,7 @@ import java.util.Random;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 
 /**
- * <描述功能>
+ * <这个是用来随机成头像和昵称的，如果想要自己配置就自己替换一下>
  *
  * @author xiaolong 719243738@qq.com
  * @version v1.0

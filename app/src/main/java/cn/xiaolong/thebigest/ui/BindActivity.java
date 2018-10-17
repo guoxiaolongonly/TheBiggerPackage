@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.adapter.SmallAccountAdapter;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.presenter.BindPresenter;
+import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.view.IBindView;
 
 /**
@@ -33,10 +35,12 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     public static final int REQUEST_ADD = 0x111;
     private RecyclerView rvContent;
     private SmallAccountAdapter smallAccountAdapter;
+    private TextView tvExport;
+    private TextView tvHint;
 
     @Override
     protected BindPresenter initPresenter() {
-        return new BindPresenter(this);
+        return new BindPresenter(this, Constant.ACOOUT_TYPE_SMALL);
     }
 
     @Override
@@ -75,13 +79,23 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             intent.putExtras(LoginActivity.buildBundle(accountInfo.cookie));
             startActivityForResult(intent, position);
         });
+        smallAccountAdapter.setOnItemClickListener(v -> {
+            AccountInfo accountInfo = (AccountInfo) v.getTag();
+            if (!accountInfo.isValid) {
+                showToast("此账号可能失效，如果账号长期为红色，建议编辑重新保存！");
+            }
+        });
+        tvExport.setOnClickListener(v -> presenter.export(smallAccountAdapter.getItems()));
     }
 
     private void initData() {
+        tvHint.setText("可以使用导出文件的内容替换掉cache/" + Constant.CACHE_FILE_SMALL + "文件中的内容做导出");
         presenter.getCache();
     }
 
     private void initView() {
+        tvHint = findViewById(R.id.tvLog);
+        tvExport = findViewById(R.id.tvExport);
         rvContent = findViewById(R.id.rvContent);
         rvContent.setAdapter(smallAccountAdapter = new SmallAccountAdapter(this, new ArrayList<>()));
         rvContent.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -104,8 +118,7 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==0)
-        {
+        if (resultCode == 0) {
             return;
         }
         if (requestCode == REQUEST_ADD && resultCode == LoginActivity.RESULT_ADD) {
@@ -115,13 +128,12 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
             }
             smallAccountAdapter.addItem(accountInfo);
             presenter.cache(smallAccountAdapter.getItems());
-        }else
-        {
+        } else {
             AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
             if (accountInfo == null) {
                 return;
             }
-            smallAccountAdapter.replaceItem(requestCode,accountInfo);
+            smallAccountAdapter.replaceItem(requestCode, accountInfo);
             presenter.cache(smallAccountAdapter.getItems());
         }
 
@@ -140,6 +152,11 @@ public class BindActivity extends BaseActivity<BindPresenter> implements IBindVi
     @Override
     public void onGetSmsCodeSuccess(String result) {
         showToast("验证码发送成功！");
+    }
+
+    @Override
+    public void onExportSuccess(String filePath) {
+        showToast("文件导出到：" + filePath);
     }
 
     @Override

@@ -25,8 +25,9 @@ import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements IMainView {
+    public static final int REQUEST_BIG_ACCOUNT = 0x123;
+
     private EditText etUrl;
-    //    private EditText tvPhoneNumber;
     private TextView tvUrlParseResult;
     private TextView tvSubmit;
     private String mCurrentSn;
@@ -34,8 +35,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     private int index;
     private int luckyNumber;
     private int perPackageCount;
-    private TextView tvHint;
+    private TextView tvLog;
     private TextView tvReset;
+    private TextView tvChoose;
+    private AccountInfo mBigAccount;
+    private TextView tvHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +63,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     private void initView() {
-//        tvPhoneNumber = findViewById(R.id.tvPhoneNumber);
+        tvChoose = findViewById(R.id.tvChoose);
         tvReset = findViewById(R.id.tvReset);
         etUrl = findViewById(R.id.etUrl);
+        tvLog = findViewById(R.id.tvLog);
         tvHint = findViewById(R.id.tvHint);
         tvUrlParseResult = findViewById(R.id.tvUrlParseResult);
         tvSubmit = findViewById(R.id.tvSubmit);
@@ -109,6 +114,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         tvReset.setOnClickListener(v -> {
             presenter.resetPerDayCount(accountInfoList);
         });
+        tvChoose.setOnClickListener(v -> {
+            startActivityForResult(new Intent(this, BigBindActivity.class), REQUEST_BIG_ACCOUNT);
+        });
     }
 
     private void touchPackage() {
@@ -120,7 +128,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_setting) {
+        if (id == R.id.action_manager) {
             startActivity(new Intent(this, BindActivity.class));
             return true;
         }
@@ -151,7 +159,18 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_BIG_ACCOUNT && resultCode == BigBindActivity.RESULT_CHOOSE) {
+            AccountInfo accountInfo = (AccountInfo) data.getSerializableExtra("accountInfo");
+            tvHint.setText("将使用大号：" + accountInfo.QQ + "领取大红包");
+            this.mBigAccount = accountInfo;
+        }
+    }
+
+    @Override
     public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
+        accountInfo.isValid = true;
         newUserCheck(packageInfo);
         perPackageCount++;
         //如果这个红包的点击次数已经循环了一个列表
@@ -169,15 +188,46 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         accountInfo.countIncrease();
         presenter.cache(accountInfoList);
         if (packageInfo == null || packageInfo.promotion_records == null) {
-            showToast("未成功获取当前领取用户数量！建议换个连接试试");
+            showToast("未成功获取当前领取用户数量！建议换个链接试试");
             return;
         }
         if (packageInfo.promotion_records.size() >= luckyNumber) {
             showToast("此红包已经被领取完了，请勿继续领取。");
         } else if (packageInfo.promotion_records.size() == luckyNumber - 1) {
             showToast("下一个为大红包，可以复制出来啦。");
+            if (mBigAccount != null) {
+                presenter.bigTouch(mCurrentSn, mBigAccount);
+            }
         } else {
             touchNext();
+        }
+    }
+
+    @Override
+    public void bigTouchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
+        if (packageInfo.promotion_records.size() == luckyNumber) {
+            showToast("QQ号：" + accountInfo.QQ + "领取大红包成功");
+        } else {
+            showToast("QQ号：" + accountInfo.QQ + "领取次数可能用尽");
+        }
+
+    }
+
+    @Override
+    public void bigTouchFail(Throwable e) {
+        if (e instanceof ErrorThrowable) {
+            ErrorThrowable errorThrowable = (ErrorThrowable) e;
+            switch (errorThrowable.code) {
+                case Constant.ERROR_INVALID:
+                    tvLog.append("大号：" + mBigAccount.QQ + "验证失败，可能需要重新添加，下个红包为最大红包，请手动领取或者换个红包继续。");
+                    break;
+                case Constant.ERROR_BUSY:
+                    presenter.bigTouch(mCurrentSn, mBigAccount);
+                    break;
+                default:
+                    showToast(e.getMessage());
+                    break;
+            }
         }
     }
 
@@ -185,7 +235,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         if (packageInfo.promotion_items != null && packageInfo.promotion_items.size() > 1) {
             for (PromotionItem promotionItem : packageInfo.promotion_items) {
                 if (promotionItem.is_new_user) {
-                    tvHint.append("手机号：" + promotionItem.phone + "是新用户，可以搞首单满减\n");
+                    tvLog.append("手机号：" + promotionItem.phone + "是新用户，可以搞首单满减\n");
                     break;
                 }
             }
@@ -204,13 +254,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     }
 
+
     @Override
     public void showError(Throwable error) {
         if (error instanceof ErrorThrowable) {
             ErrorThrowable errorThrowable = (ErrorThrowable) error;
             switch (errorThrowable.code) {
                 case Constant.ERROR_INVALID:
-                    tvHint.append("QQ：" + accountInfoList.get(index).QQ + "验证失败，请重新添加\n");
+                    tvLog.append("QQ：" + accountInfoList.get(index).QQ + "验证失败，可能需要重新添加\n");
                     perPackageCount++;
                     accountInfoList.get(index).isValid = false;
                     presenter.cache(accountInfoList);

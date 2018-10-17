@@ -5,6 +5,21 @@ package cn.xiaolong.thebigest.util;
  */
 
 public class Constant {
+
+
+
+    public static final int ACOOUT_TYPE_BIG = 1;
+    public static final int ACOOUT_TYPE_SMALL = 0;
+    public static final String EXPORT_FILE_BIG = "bigExport.txt";
+    public static final String EXPORT_FILE_SMALL = "smallExport.txt";
+    public static final String CACHE_FILE_BIG = "bigCache.txt";
+    public static final String CACHE_FILE_SMALL = "hbCache.txt";
+
+
+
+
+
+
     /**
      * ERROR_CODE
      */

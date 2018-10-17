@@ -19,35 +19,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="10dp"
-        android:text="注：点击领取将会领取到大红包之前" />
 
-    <TextView
-        android:id="@+id/tvReset"
-        android:layout_width="40dp"
-        android:layout_marginLeft="10dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"
-        android:text="重置" />
+        <TextView
+            android:id="@+id/tvHint"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:paddingLeft="10dp"
+            android:text="点击领取将会领取到大红包之前" />
 
         <TextView
             android:id="@+id/tvChoose"
-            android:layout_width="80dp"
-            android:layout_marginLeft="10dp"
+            android:layout_width="60dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
-            android:gravity="center"
+            android:layout_marginLeft="10dp"
             android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:text="选择大号" />
+            android:gravity="center"
+            android:text="选择大号"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tvReset"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="重置"
+            android:textColor="@color/white" />
+
 
     </LinearLayout>
 
@@ -60,7 +63,7 @@
     <EditText
         android:id="@+id/etUrl"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="220dp"
         android:layout_marginTop="10dp"
         android:background="@color/white"
         android:gravity="start"
@@ -97,16 +100,18 @@
             android:text="领取"
             android:textColor="@color/white" />
     </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/tvHint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorPrimary" />
     </ScrollView>
 </LinearLayout>

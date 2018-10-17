@@ -20,7 +20,11 @@ public interface IMainView  extends ILoadingView{
 
     void touchSuccess(AccountInfo accountInfo, PackageInfo position);
 
+    void bigTouchSuccess(AccountInfo accountInfo,PackageInfo packageInfo);
+
     void onGetListSuccess(List<AccountInfo> accountInfoList);
 
     void cacheSuccess();
+
+    void bigTouchFail(Throwable e);
 }
