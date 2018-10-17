@@ -1,5 +1,6 @@
 # TheBiggerPackage
-饿了么，美团一键领取最大红包APP
+
+饿了么，一键领取最大红包APP
 
 ## 版本功能
 
