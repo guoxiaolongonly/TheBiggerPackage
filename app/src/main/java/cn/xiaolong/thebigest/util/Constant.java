@@ -26,6 +26,8 @@ public class Constant {
     public static final int ERROR_BUSY=10006;
     public static final int ERROR_INVALID=10005;
     public static final int ERROR_UN_KNOWN =10000;
+    public static final int ERROR_UN_LOGIN =10001;
+    public static final int ERROR_RESPONSE =10002;
 
     public static final int ERROR_PACKAGE=10008;
 

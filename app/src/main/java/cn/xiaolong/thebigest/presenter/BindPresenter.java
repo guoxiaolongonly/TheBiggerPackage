@@ -11,6 +11,8 @@ import java.util.List;
 
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.net.DataManager;
+import cn.xiaolong.thebigest.ui.BigBindActivity;
+import cn.xiaolong.thebigest.ui.BindActivity;
 import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.FileUtil;
 import cn.xiaolong.thebigest.view.IBindView;
@@ -31,7 +33,8 @@ public class BindPresenter extends BasePresenter<IBindView> {
     private String exportFileName;
 
     public BindPresenter(Activity activity, int accountType) {
-        super(activity);
+
+        super(activity instanceof BindActivity ? (BindActivity) activity : (BigBindActivity) activity);
         switch (accountType) {
             case Constant.ACOOUT_TYPE_BIG:
                 cacheFileName = Constant.CACHE_FILE_BIG;

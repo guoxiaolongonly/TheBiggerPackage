@@ -1,7 +1,5 @@
 package cn.xiaolong.thebigest.presenter;
 
-import android.app.Activity;
-
 import cn.xiaolong.thebigest.view.ILoadingView;
 import io.reactivex.Observer;
 import io.reactivex.disposables.CompositeDisposable;
@@ -16,17 +14,11 @@ import io.reactivex.disposables.Disposable;
  */
 public abstract class BasePresenter<T extends ILoadingView> {
     protected T mView;
-    protected Activity mActivity;
     protected CompositeDisposable mCompositeSubscription;
 
-    public BasePresenter(Activity activity) {
-        this.mView = (T) activity;
-        this.mActivity = activity;
-    }
 
-    public BasePresenter(T view, Activity activity) {
-        mView = view;
-        mActivity = activity;
+    public BasePresenter(T view) {
+        mView =view;
     }
 
     protected void unSubscribe() {
@@ -40,6 +32,7 @@ public abstract class BasePresenter<T extends ILoadingView> {
      * 这边必须要通过addSubscribe 来做请求，防止页面销毁后订阅者
      * 的生命周期没结束抛异常
      * 在RX2 中可以通过disposable来取消
+     *
      * @param disposable
      */
     protected void addSubscribe(Disposable disposable) {
@@ -105,7 +98,6 @@ public abstract class BasePresenter<T extends ILoadingView> {
 
     public void detachView() {
         this.mView = null;
-        mActivity = null;
         unSubscribe();
     }
 }

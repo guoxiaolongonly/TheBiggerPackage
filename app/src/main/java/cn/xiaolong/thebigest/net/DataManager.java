@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorResponse;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
+import cn.xiaolong.thebigest.entity.OpenPackageInfo;
 import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.entity.TokenBean;
 import cn.xiaolong.thebigest.util.Constant;
@@ -134,6 +135,27 @@ public class DataManager {
                 .compose(observableTransformer());
     }
 
+    public static Observable<OpenPackageInfo> openPackage(String cookie,
+                                                          String avatar,
+                                                          String backId,
+                                                          String lat,
+                                                          String lng,
+                                                          String nickname,
+                                                          String packet_id,
+                                                          String user_id) {
+        return Dao.getMainApiService()
+                .openPackage(cookie, avatar, backId, lat, lng, nickname, packet_id, user_id)
+                .flatMap(responseBody -> {
+                    if ("200".equals(responseBody.code)) {
+                        return Observable.just(responseBody.data);
+                    } else {
+                        return Observable.error(new ErrorThrowable(Constant.ERROR_RESPONSE, "Response错误：" + responseBody.message));
+                    }
+
+                })
+                .compose(observableTransformer());
+    }
+
 
     /**
      * @param <T>
@@ -163,6 +185,10 @@ public class DataManager {
                     case "TOO_BUSY":
                         //操作频繁
                         errorResponse.errorCode = Constant.ERROR_BUSY;
+                        break;
+                    case "UNAUTHORIZED":
+                        //操作频繁
+                        errorResponse.errorCode = Constant.ERROR_UN_LOGIN;
                         break;
                     default:
                         errorResponse.errorCode = Constant.ERROR_UN_KNOWN;

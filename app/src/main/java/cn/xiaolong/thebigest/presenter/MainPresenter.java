@@ -1,12 +1,10 @@
 package cn.xiaolong.thebigest.presenter;
 
-import android.app.Activity;
 import android.os.Environment;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,9 +15,10 @@ import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
 import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.net.DataManager;
+import cn.xiaolong.thebigest.ui.MainActivity;
 import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.FileUtil;
-import cn.xiaolong.thebigest.view.IMainView;
+import cn.xiaolong.thebigest.util.UrlParserHelper;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -32,34 +31,21 @@ import static cn.xiaolong.thebigest.util.Constant.ERROR_PACKAGE;
  * @version v1.0
  * @since 2018/9/20 16:57
  */
-public class MainPresenter extends BasePresenter<IMainView> {
-
-    public MainPresenter(Activity activity) {
+public class MainPresenter extends BasePresenter<MainActivity> {
+    public MainPresenter(MainActivity activity) {
         super(activity);
     }
 
     public void getCheckAndParseLuckyPackage(String redPackageUrl) {
-        redPackageUrl.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
-        redPackageUrl = URLDecoder.decode(redPackageUrl);
-        if (redPackageUrl.startsWith("https://") && redPackageUrl.contains("https://h5.ele.me/hongbao/")) {
-            //说明应该是红包链接了
-            Map<String, String> paramMap = new HashMap<>();
-            String parmas = redPackageUrl.split("https://h5.ele.me/hongbao/")[1];
-            String[] datas = parmas.split("&");
-            for (String data : datas) {
-                String[] param = data.split("=");
-                if (param.length > 1) {
-                    paramMap.put(param[0], param[1]);
-                }
-            }
-            if (paramMap.containsKey("sn") && paramMap.containsKey("lucky_number")) {
-                mView.getSnAndLuckyNumSuccess(paramMap.get("sn"), paramMap.get("lucky_number"));
-            } else {
-                mView.showError(new ErrorThrowable(ERROR_PACKAGE, "红包地址错误"));
-            }
-        } else {
+        String result = UrlParserHelper.parserUrl(redPackageUrl);
+        if (TextUtils.isEmpty(result)) {
             mView.showError(new ErrorThrowable(ERROR_PACKAGE, "红包地址错误"));
+        } else if (result.startsWith("id=")) {
+            mView.getIdSuccess(result.replace("id=", ""));
+        } else if (result.startsWith("sn=")) {
+            mView.getSnSuccess(result.replace("sn=", ""));
         }
+
     }
 
     /**
@@ -76,7 +62,12 @@ public class MainPresenter extends BasePresenter<IMainView> {
         }));
     }
 
-
+    /**
+     * 点红包
+     *
+     * @param sn          红包唯一识别码
+     * @param accountInfo 红包信息
+     */
     public void touchPackage(String sn, AccountInfo accountInfo) {
         if (TextUtils.isEmpty(accountInfo.sid)) {
             if (accountInfo.cookie.contains("nickname\":\"")) {
@@ -93,6 +84,23 @@ public class MainPresenter extends BasePresenter<IMainView> {
                         mView.touchSuccess(accountInfo, s)
                 ));
     }
+
+    public void openPackage(String id, AccountInfo accountInfo) {
+        Map<String, String> cookies = getCookieInfo(accountInfo.cookie);
+        StringBuffer cookieBuffer = new StringBuffer();
+        String userid = cookies.get("USERID");
+        String ubtssid = cookies.get("ubt_ssid");
+        String sid = cookies.get("SID");
+        cookieBuffer.append("USERID=").append(userid).append(";")
+                .append("ubt_ssid=").append(ubtssid).append(";")
+                .append("SID=").append(sid);
+        DataManager.openPackage(cookieBuffer.toString(), accountInfo.headerurl, "10001",
+                "24.4946534", "118.1742511", accountInfo.nickname, id, userid)
+                .subscribe(getSubscriber(s -> {
+                    mView.openSuccess(accountInfo, s);
+                }));
+    }
+
 
     public void bigTouch(String sn, AccountInfo accountInfo) {
         if (TextUtils.isEmpty(accountInfo.sid)) {
@@ -114,7 +122,7 @@ public class MainPresenter extends BasePresenter<IMainView> {
 
                     @Override
                     public void onNext(PackageInfo packageInfo) {
-                        mView.bigTouchSuccess(accountInfo,packageInfo);
+                        mView.bigTouchSuccess(accountInfo, packageInfo);
                     }
 
                     @Override
@@ -130,7 +138,6 @@ public class MainPresenter extends BasePresenter<IMainView> {
     }
 
     public void getCache() {
-
         String accountCache = FileUtil.loadDataFromFile(Environment.getExternalStorageDirectory().getPath() + "/cache/", Constant.CACHE_FILE_SMALL);
         List<AccountInfo> accountInfoList;
         if (!TextUtils.isEmpty(accountCache)) {
@@ -153,5 +160,16 @@ public class MainPresenter extends BasePresenter<IMainView> {
     public void cache(List<AccountInfo> accountInfoList) {
         FileUtil.saveDataToFile(JSON.toJSONString(accountInfoList), Environment.getExternalStorageDirectory().getPath() + "/cache/", Constant.CACHE_FILE_SMALL);
         mView.cacheSuccess();
+    }
+
+
+    public HashMap<String, String> getCookieInfo(String cookies) {
+        HashMap<String, String> cookieMaps = new HashMap<>();
+        String[] cookieArray = cookies.split(";");
+        for (String cookie : cookieArray) {
+            String[] result = cookie.split("=");
+            cookieMaps.put(result[0].trim().intern(), result[1]);
+        }
+        return cookieMaps;
     }
 }

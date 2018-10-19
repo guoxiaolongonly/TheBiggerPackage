@@ -16,6 +16,7 @@ import cn.xiaolong.thebigest.BuildConfig;
 import cn.xiaolong.thebigest.R;
 import cn.xiaolong.thebigest.entity.AccountInfo;
 import cn.xiaolong.thebigest.entity.ErrorThrowable;
+import cn.xiaolong.thebigest.entity.OpenPackageInfo;
 import cn.xiaolong.thebigest.entity.PackageInfo;
 import cn.xiaolong.thebigest.entity.PromotionItem;
 import cn.xiaolong.thebigest.presenter.MainPresenter;
@@ -23,18 +24,23 @@ import cn.xiaolong.thebigest.util.Constant;
 import cn.xiaolong.thebigest.util.LogUtil;
 import cn.xiaolong.thebigest.util.SPHelp;
 import cn.xiaolong.thebigest.view.IMainView;
+import cn.xiaolong.thebigest.view.IOpenView;
+import cn.xiaolong.thebigest.view.ITouchView;
 
-public class MainActivity extends BaseActivity<MainPresenter> implements IMainView {
+public class MainActivity extends BaseActivity<MainPresenter> implements IMainView, IOpenView, ITouchView {
     public static final int REQUEST_BIG_ACCOUNT = 0x123;
 
     private EditText etUrl;
     private TextView tvUrlParseResult;
     private TextView tvSubmit;
     private String mCurrentSn;
+    private String mCurrentId;
     private List<AccountInfo> accountInfoList;
-    private int index;
+    private int touchIndex;
+    private int openIndex;
     private int luckyNumber;
-    private int perPackageCount;
+    private int perPackageTouchCount;
+    private int perPackageOpenCount;
     private TextView tvLog;
     private TextView tvReset;
     private TextView tvChoose;
@@ -84,7 +90,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     private void setListener() {
         tvSubmit.setOnClickListener(v -> {
-            if (luckyNumber == 0 || TextUtils.isEmpty(mCurrentSn)) {
+            if (TextUtils.isEmpty(mCurrentSn) && TextUtils.isEmpty(mCurrentId)) {
                 showToast("请填写正确红包地址！");
                 return;
             }
@@ -92,8 +98,13 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                 showToast("你还没有小号，请先通过配置添加小号！");
                 return;
             }
-            perPackageCount = 0;
-            touchPackage();
+            perPackageTouchCount = 0;
+            perPackageOpenCount = 0;
+            if (!TextUtils.isEmpty(mCurrentSn)) {
+                touchSmall();
+            } else {
+                openPackage();
+            }
         });
         etUrl.addTextChangedListener(new TextWatcher() {
             @Override
@@ -117,13 +128,23 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         tvChoose.setOnClickListener(v -> {
             startActivityForResult(new Intent(this, BigBindActivity.class), REQUEST_BIG_ACCOUNT);
         });
+        findViewById(R.id.tvIntro).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, IntroductionActivity.class));
+        });
     }
 
-    private void touchPackage() {
-        presenter.touchPackage(mCurrentSn, accountInfoList.get(index));
 
+    private void openPackage() {
+        presenter.openPackage(mCurrentId, accountInfoList.get(openIndex));
     }
 
+    private void touchSmall() {
+        presenter.touchPackage(mCurrentSn, accountInfoList.get(touchIndex));
+    }
+
+    private void touchBig() {
+        presenter.bigTouch(mCurrentSn, mBigAccount);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -138,23 +159,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     @Override
     public void onGetLuckyNumberSuccess(String result) {
         luckyNumber = Integer.parseInt(result);
+        if (luckyNumber - 1 > accountInfoList.size()) {
+            showToast("当前帐号数量可能少于，所需用户数，请慎重领取。");
+            return;
+        }
         tvUrlParseResult.setText("红包地址正确,最大红包为:" + result);
+        tvSubmit.setText("领红包");
     }
 
     @Override
-    public void getSnAndLuckyNumSuccess(String sn, String luckNumber) {
+    public void getSnSuccess(String sn) {
         if (!TextUtils.isEmpty(sn)) {
             presenter.getLuckyNumber(sn);
             mCurrentSn = sn;
+            mCurrentId = "";
             SPHelp.setAppParam(BuildConfig.KEY_SN, sn);
-            if (Integer.parseInt(luckNumber) - 1 > accountInfoList.size()) {
-                showToast("当前帐号数量可能少于，所需用户数，请慎重领取。");
-                return;
-            }
-            tvSubmit.setEnabled(true);
-        } else {
-            tvUrlParseResult.setText("红包地址错误,请复制正确的链接！");
-            tvSubmit.setEnabled(false);
         }
     }
 
@@ -172,9 +191,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
     public void touchSuccess(AccountInfo accountInfo, PackageInfo packageInfo) {
         accountInfo.isValid = true;
         newUserCheck(packageInfo);
-        perPackageCount++;
+        perPackageTouchCount++;
         //如果这个红包的点击次数已经循环了一个列表
-        if (perPackageCount > accountInfoList.size()) {
+        if (perPackageTouchCount > accountInfoList.size()) {
             showToast("小不够用啦！可以去配置加一些！当前红包：" + packageInfo.promotion_records.size() + "大红包：" + luckyNumber);
             return;
         }
@@ -196,7 +215,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
         } else if (packageInfo.promotion_records.size() == luckyNumber - 1) {
             showToast("下一个为大红包，可以复制出来啦。");
             if (mBigAccount != null) {
-                presenter.bigTouch(mCurrentSn, mBigAccount);
+                touchBig();
             }
         } else {
             touchNext();
@@ -222,7 +241,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                     tvLog.append("大号：" + mBigAccount.QQ + "验证失败，可能需要重新添加，下个红包为最大红包，请手动领取或者换个红包继续。");
                     break;
                 case Constant.ERROR_BUSY:
-                    presenter.bigTouch(mCurrentSn, mBigAccount);
+                    touchBig();
                     break;
                 default:
                     showToast(e.getMessage());
@@ -245,7 +264,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 
     @Override
     public void onGetListSuccess(List<AccountInfo> accountInfoList) {
-        index = 0;
+        touchIndex = 0;
+        openIndex = 0;
         this.accountInfoList = accountInfoList;
     }
 
@@ -261,24 +281,83 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
             ErrorThrowable errorThrowable = (ErrorThrowable) error;
             switch (errorThrowable.code) {
                 case Constant.ERROR_INVALID:
-                    tvLog.append("QQ：" + accountInfoList.get(index).QQ + "验证失败，可能需要重新添加\n");
-                    perPackageCount++;
-                    accountInfoList.get(index).isValid = false;
+                    tvLog.append("QQ：" + accountInfoList.get(touchIndex).QQ + "验证失败，可能需要重新添加\n");
+                    perPackageTouchCount++;
+                    accountInfoList.get(touchIndex).isValid = false;
                     presenter.cache(accountInfoList);
                     touchNext();
                     break;
                 case Constant.ERROR_BUSY:
-                    touchPackage();
+                    touchSmall();
                     break;
+                case Constant.ERROR_PACKAGE:
+                    tvUrlParseResult.setText("地址有误，请填写拆红包或者拼手气红包地址");
+                    mCurrentSn = "";
+                    mCurrentId = "";
+                    break;
+                case Constant.ERROR_UN_LOGIN:
+                    //未登录
+//                    showToast(error.getMessage());
+//                    break;
+
+                case Constant.ERROR_RESPONSE:
+//                    //未登录
+//                    if(!TextUtils.isEmpty(mCurrentId)) {
+//                        openIndex++;
+//                    }
+//                    showToast();
+                    if (!TextUtils.isEmpty(mCurrentId)) {
+                        openIndex++;
+                        perPackageTouchCount++;
+                        openNext();
+                    }
                 default:
                     showToast(error.getMessage());
                     break;
             }
+        } else {
+            showToast(error.getMessage());
         }
     }
 
-    public void touchNext() {
-        index = (index + 1) % accountInfoList.size();
-        touchPackage();
+    private void openNext() {
+        openIndex = (openIndex + 1) % accountInfoList.size();
+        openPackage();
     }
+
+    public void touchNext() {
+        touchIndex = (touchIndex + 1) % accountInfoList.size();
+        touchSmall();
+    }
+
+    @Override
+    public void getIdSuccess(String id) {
+        if (2 > accountInfoList.size()) {
+            showToast("当前帐号数量可能少于所需用户数,请慎重拆红包。");
+            return;
+        }
+        if (!TextUtils.isEmpty(id)) {
+            mCurrentId = id;
+            mCurrentSn = "";
+            tvUrlParseResult.setText("地址为拆红包地址，可拆红包");
+            tvSubmit.setText("拆红包");
+        }
+    }
+
+
+    @Override
+    public void openSuccess(AccountInfo accountInfo, OpenPackageInfo packageInfo) {
+        if (packageInfo.opened_amount == packageInfo.total_amount) {
+            showToast("当前红包已经拆完！");
+            return;
+        }
+        perPackageOpenCount++;
+        //如果这个红包的点击次数已经循环了一个列表
+        if (perPackageOpenCount > accountInfoList.size()) {
+            showToast("小不够用啦！可以去配置加一些！当前拆解金额:" + packageInfo.opened_amount + "总金额：" + packageInfo.total_amount);
+            return;
+        }
+        openPackage();
+    }
+
 }

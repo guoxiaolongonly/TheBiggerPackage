@@ -2,7 +2,9 @@ package cn.xiaolong.thebigest.net;
 
 
 import cn.xiaolong.thebigest.entity.AccountInfo;
+import cn.xiaolong.thebigest.entity.OpenPackageInfo;
 import cn.xiaolong.thebigest.entity.PackageInfo;
+import cn.xiaolong.thebigest.entity.Response;
 import cn.xiaolong.thebigest.entity.TokenBean;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -104,5 +106,30 @@ public interface ApiService {
                                             @Field("unionid") String unionid,
                                             @Field("weixin_avatar") String weixin_avatar,
                                             @Field("weixin_username") String weixin_username);
+
+
+    /**
+     *
+     * @param cookie cookie
+     * @param avatar 头像
+     * @param backId 默认1001
+     * @param lat 维度
+     * @param lng 经度
+     * @param nickname 昵称
+     * @param packet_id 这个就是唯一的红包id
+     * @param user_id 用户id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/restapi/traffic/redpacket/open")
+    Observable<Response<OpenPackageInfo>> openPackage(@Header("Cookie") String cookie,
+                                                      @Field("avatar") String avatar,
+                                                      @Field("backId") String backId,
+                                                      @Field("lat") String lat,
+                                                      @Field("lng") String lng,
+                                                      @Field("nickname") String nickname,
+                                                      @Field("packet_id") String packet_id,
+                                                      @Field("user_id") String user_id);
+
 
 }
