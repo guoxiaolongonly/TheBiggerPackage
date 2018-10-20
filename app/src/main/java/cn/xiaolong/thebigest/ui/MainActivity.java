@@ -302,16 +302,17 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
 //                        openIndex++;
 //                    }
 //                    showToast();
+
+                case Constant.ERROR_UN_LOGIN:
+                    //未登录
+//                    showToast(error.getMessage());
+//                    break;
                     if (!TextUtils.isEmpty(mCurrentId)) {
                         openIndex++;
                         perPackageTouchCount++;
                         openNext();
                     }
                     break;
-                case Constant.ERROR_UN_LOGIN:
-                    //未登录
-//                    showToast(error.getMessage());
-//                    break;
                 default:
                     showToast(error.getMessage());
                     break;
