@@ -16,12 +16,13 @@ import cn.xiaolong.thebigest.R;
  */
 public class IntroductionActivity extends BaseActivity {
     private WebView wvLogin;
-    private static final String url = "https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/READEME.md";
+    private static final String url = "https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/README.md";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setTitle("説明文檔");
         wvLogin = findViewById(R.id.wvLogin);
         initWebSetting();
         wvLogin.loadUrl(url);

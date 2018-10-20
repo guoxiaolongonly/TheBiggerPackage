@@ -357,7 +357,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
             showToast("小不够用啦！可以去配置加一些！当前拆解金额:" + packageInfo.opened_amount + "总金额：" + packageInfo.total_amount);
             return;
         }
-        openPackage();
+        openNext();
     }
 
 }

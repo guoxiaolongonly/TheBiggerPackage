@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BiggerPackage.iml" filepath="$PROJECT_DIR$/BiggerPackage.iml" />
+      <module fileurl="file://D:\workspace\TheBiggest\BiggerPackage.iml" filepath="D:\workspace\TheBiggest\BiggerPackage.iml" />
       <module fileurl="file://$PROJECT_DIR$/TheBiggest.iml" filepath="$PROJECT_DIR$/TheBiggest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
