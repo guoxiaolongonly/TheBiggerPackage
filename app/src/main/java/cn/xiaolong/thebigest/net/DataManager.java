@@ -65,8 +65,8 @@ public class DataManager {
      * "panelColor":"ffec00",
      * "background_url":"https://fuss10.elemecdn.com/c/d7/f51827ceaf3ffce33e73773bd7fdfjpeg.jpeg",
      * "defineBtn":{
-     * "show":0
      * },
+     * "show":0
      * "panelTitleColor":"ffffff",
      * "captionColor":"ffffff",
      * "captionBackgroundColor":"000000",
@@ -171,31 +171,36 @@ public class DataManager {
     private static <T> Function<Throwable, Observable<? extends T>> errorResumeFunc() {
         return throwable -> {
             throwable.printStackTrace();
-            ResponseBody errorBody = ((HttpException) throwable).response().errorBody();
-            //如果不是网络错误可能会是本地错误
-            ErrorResponse errorResponse = new ErrorResponse("未知错误，可联系作者反馈。", ((HttpException) throwable).message(), 0x66);
-            String reuslt = errorBody.source().readString(Charset.forName("UTF-8"));
-            if (errorBody != null && errorBody.contentLength() > 0) {
-                errorResponse = JSON.parseObject(reuslt, ErrorResponse.class);
-                switch (errorResponse.name) {
-                    case "PHONE_IS_EMPTY":
-                        //帐号失效
-                        errorResponse.errorCode = Constant.ERROR_INVALID;
-                        break;
-                    case "TOO_BUSY":
-                        //操作频繁
-                        errorResponse.errorCode = Constant.ERROR_BUSY;
-                        break;
-                    case "UNAUTHORIZED":
-                        //操作频繁
-                        errorResponse.errorCode = Constant.ERROR_UN_LOGIN;
-                        break;
-                    default:
-                        errorResponse.errorCode = Constant.ERROR_UN_KNOWN;
+            if (throwable instanceof HttpException) {
+                ResponseBody errorBody = ((HttpException) throwable).response().errorBody();
+                //如果不是网络错误可能会是本地错误
+                ErrorResponse errorResponse = new ErrorResponse("未知错误，可联系作者反馈。", ((HttpException) throwable).message(), 0x66);
+                String reuslt = errorBody.source().readString(Charset.forName("UTF-8"));
+                if (errorBody != null && errorBody.contentLength() > 0) {
+                    errorResponse = JSON.parseObject(reuslt, ErrorResponse.class);
+                    switch (errorResponse.name) {
+                        case "PHONE_IS_EMPTY":
+                            //帐号失效
+                            errorResponse.errorCode = Constant.ERROR_INVALID;
+                            break;
+                        case "TOO_BUSY":
+                            //操作频繁
+                            errorResponse.errorCode = Constant.ERROR_BUSY;
+                            break;
+                        case "UNAUTHORIZED":
+                            //操作频繁
+                            errorResponse.errorCode = Constant.ERROR_UN_LOGIN;
+                            break;
+                        default:
+                            errorResponse.errorCode = Constant.ERROR_UN_KNOWN;
+                    }
                 }
-
+                return Observable.error(new ErrorThrowable(errorResponse.errorCode, errorResponse.message));
+            } else if (throwable instanceof ErrorThrowable) {
+                return Observable.error(throwable);
+            } else {
+                return Observable.error(new ErrorThrowable(Constant.ERROR_UN_KNOWN, throwable.getMessage()));
             }
-            return Observable.error(new ErrorThrowable(errorResponse.errorCode, errorResponse.message));
         };
     }
 

@@ -2,8 +2,13 @@ package cn.xiaolong.thebigest.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import cn.xiaolong.thebigest.R;
 
@@ -39,5 +44,23 @@ public class IntroductionActivity extends BaseActivity {
         wvLogin.getSettings().setDefaultTextEncodingName("utf-8");            //设置编码格式
         wvLogin.getSettings().setDomStorageEnabled(true);
         wvLogin.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);       //缓存模式
+        wvLogin.setWebViewClient(new WebViewClient() {
+
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
     }
 }

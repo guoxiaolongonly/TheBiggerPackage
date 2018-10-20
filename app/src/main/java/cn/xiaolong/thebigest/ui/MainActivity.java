@@ -295,10 +295,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                     mCurrentSn = "";
                     mCurrentId = "";
                     break;
-                case Constant.ERROR_UN_LOGIN:
-                    //未登录
-//                    showToast(error.getMessage());
-//                    break;
 
                 case Constant.ERROR_RESPONSE:
 //                    //未登录
@@ -311,6 +307,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                         perPackageTouchCount++;
                         openNext();
                     }
+                    break;
+                case Constant.ERROR_UN_LOGIN:
+                    //未登录
+//                    showToast(error.getMessage());
+//                    break;
                 default:
                     showToast(error.getMessage());
                     break;
