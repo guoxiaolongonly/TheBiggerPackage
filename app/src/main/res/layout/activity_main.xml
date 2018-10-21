@@ -60,7 +60,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/white"
             android:gravity="start"
-            android:hint="请在这里输入饿了么红包地址"
+            android:hint="填入拆红包地址(url带id)，或者抢红包地址(url带sn)"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
 
