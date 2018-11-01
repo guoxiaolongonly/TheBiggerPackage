@@ -296,21 +296,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                     mCurrentId = "";
                     break;
                 case Constant.ERROR_UN_LOGIN:
-                    //未登录
-//                    showToast(error.getMessage());
-//                    break;
                 case Constant.ERROR_OUT_OF_TIME:
                 case Constant.ERROR_RESPONSE:
-//                    //未登录
-//                    if(!TextUtils.isEmpty(mCurrentId)) {
-//                        openIndex++;
-//                    }
-//                    showToast();
                     if (!TextUtils.isEmpty(mCurrentId)) {
                         openIndex++;
                         perPackageTouchCount++;
                         openNext();
                     }
+                    break;
                 default:
                     showToast(error.getMessage());
                     break;
@@ -357,7 +350,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
             showToast("小不够用啦！可以去配置加一些！当前拆解金额:" + packageInfo.opened_amount + "总金额：" + packageInfo.total_amount);
             return;
         }
-        openPackage();
+        openNext();
     }
 
 }
