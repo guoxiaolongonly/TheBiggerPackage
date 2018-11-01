@@ -190,6 +190,10 @@ public class DataManager {
                         //操作频繁
                         errorResponse.errorCode = Constant.ERROR_UN_LOGIN;
                         break;
+                    case "SOA_TIMEOUT":
+                        //操作频繁
+                        errorResponse.errorCode = Constant.ERROR_OUT_OF_TIME;
+                        break;
                     default:
                         errorResponse.errorCode = Constant.ERROR_UN_KNOWN;
                 }

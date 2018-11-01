@@ -299,7 +299,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements IMainVi
                     //未登录
 //                    showToast(error.getMessage());
 //                    break;
-
+                case Constant.ERROR_OUT_OF_TIME:
                 case Constant.ERROR_RESPONSE:
 //                    //未登录
 //                    if(!TextUtils.isEmpty(mCurrentId)) {

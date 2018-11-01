@@ -28,6 +28,7 @@ public class Constant {
     public static final int ERROR_UN_KNOWN =10000;
     public static final int ERROR_UN_LOGIN =10001;
     public static final int ERROR_RESPONSE =10002;
+    public static final int ERROR_OUT_OF_TIME =10003;
 
     public static final int ERROR_PACKAGE=10008;
 
