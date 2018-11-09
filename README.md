@@ -4,6 +4,9 @@
 
 ## 版本功能
 
+  获取存储权限只是为了防止你们APP卸载后cookie数据丢失，存储目录 /storage/emulated/0/cache/hbCache.txt
+
+
 1.在添加页可以登录QQ和绑定手机号缓存帐号
 
 2.小号列表页可管理小号，小号条目侧拉可复制，编辑，删除Cookie。
@@ -24,8 +27,7 @@
 
 下载地址：https://fir.im/eleme   （这是android APP）
 
-这个版本就到此为止了，因为目前整个功能有点乱，希望大家多提提界面设计和功能设计上的建议，我会在第三版本做更新。
-
+这个版本就到此为止了。
 ## 界面如下
 
 ![界面展示](https://github.com/guoxiaolongonly/TheBiggerPackage/blob/master/screen/main.png)
