@@ -2,8 +2,6 @@ package cn.xiaolong.thebigest.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -62,5 +60,15 @@ public class IntroductionActivity extends BaseActivity {
                 super.onPageFinished(view, url);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (wvLogin.canGoBack()) {
+            wvLogin.goBack();
+        } else {
+            super.onBackPressed();
+        }
+
     }
 }
