@@ -1,4 +1,4 @@
-# TheBiggerPackage
+# ~~TheBiggerPackage（不在维护）~~
 
 饿了么，一键领取最大红包APP
 

@@ -31,7 +31,7 @@ public class UrlParserHelper {
             if (paramMap.containsKey("sn") && paramMap.containsKey("lucky_number")) {
                 parserResult = "sn=" + paramMap.get("sn");
             }
-        } else if (redPackageUrl.startsWith("https://h5.ele.me/grouping/activity/?id=")||redPackageUrl.startsWith("https://h5.ele.me/grouping/1111/activity/?id=")) {
+        } else if (redPackageUrl.startsWith("https://h5.ele.me/grouping/")) {
             parserResult = "id=" + redPackageUrl.split("id=")[1].split("&")[0];
         }
         return parserResult;

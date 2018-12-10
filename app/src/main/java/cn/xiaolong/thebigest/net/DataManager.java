@@ -30,6 +30,7 @@ import retrofit2.HttpException;
  * @version v1.0
  * @since 2018/9/21 14:28
  */
+@Deprecated
 public class DataManager {
 
     /**
